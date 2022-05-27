@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:layout_marginBottom="@dimen/spaceArchive"
+    >
+
+    <RelativeLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+    >
+
+    <ImageView
+        android:id="@+id/FileImage"
+        android:layout_width="@dimen/ItemArchive"
+        android:layout_height="@dimen/ItemArchive"
+        android:layout_alignBottom="@+id/archiveText"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_file" />
+
+    <TextView
+        android:id="@+id/archiveText"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ItemArchive"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="0dp"
+        android:lines="1"
+        android:ellipsize="end"
+        android:layout_marginBottom="0dp"
+        android:layout_toStartOf="@+id/optionButton"
+        android:layout_toEndOf="@+id/FileImage"
+        android:text="@string/descriptionError"
+        android:textAlignment="center"
+        android:textSize="@dimen/titleScale"
+        android:textStyle="bold" />
+
+    <ImageButton
+        android:id="@+id/optionButton"
+        android:layout_width="@dimen/ItemArchive"
+        android:layout_height="@dimen/ItemArchive"
+        android:layout_alignBottom="@+id/archiveText"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="-4dp"
+        android:background="#00FFFFFF"
+        android:backgroundTint="#000000"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_option" />
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>

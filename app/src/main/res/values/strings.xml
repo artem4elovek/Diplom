@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Пульс</string>
+    <string name="descriptionError">строка не загружена</string>
+    <string name="viewError">неизвестная ошибка в View model</string>
+    <string name="delete">удалить</string>
+    <string name="moveUp">поставить выше</string>
+    <string name="moveDown">поставить ниже</string>
+
+</resources>
