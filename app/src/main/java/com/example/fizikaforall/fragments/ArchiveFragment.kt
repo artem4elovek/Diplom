@@ -11,15 +11,20 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.fizikaforall.MainActivity
+import com.example.fizikaforall.R
 import com.example.fizikaforall.adapters.ArchiveActionListener
+import com.example.fizikaforall.databinding.FragmentDrawingWorkbenchBinding
 import com.example.fizikaforall.databinding.FragmentRecuclerBinding
 import com.example.fizikaforall.fragments.FragmentUtils.factory
+import com.example.fizikaforall.fragments.contract.CustomAction
+import com.example.fizikaforall.fragments.contract.HasCustomAction
+import com.example.fizikaforall.fragments.contract.navigator
 import com.example.fizikaforall.manual.ManualProjectsListener
 import com.example.fizikaforall.fragments.viewModels.ProjectListViewModel
 import com.example.fizikaforall.manual.ManualProject
 import com.example.fizikaforall.adapters.ArchiveAdapter as ArchiveAdapter1
 
-class ArchiveFragment: Fragment() {
+class ArchiveFragment: Fragment(),HasCustomAction {
     private lateinit var binding: FragmentRecuclerBinding
     private lateinit var adapter : ArchiveAdapter1
     private val testList  = mutableListOf<ManualProject>()
@@ -34,19 +39,15 @@ class ArchiveFragment: Fragment() {
         binding= FragmentRecuclerBinding.inflate(inflater,container,false)
         adapter = ArchiveAdapter1(object : ArchiveActionListener {
             override fun onProjectSelected(manualProject: ManualProject) {
-                Toast.makeText(activity, "dadfa",Toast.LENGTH_SHORT).show()
+                launchWorkbench(manualProject.id)
             }
-
             override fun onProjectDelete(manualProject: ManualProject) {
                 Toast.makeText(activity, "dadfa",Toast.LENGTH_SHORT).show()
             }
-
             override fun onProjectMove(manualProject: ManualProject,moveBy: Int) {
                 Toast.makeText(activity, "dadfa",Toast.LENGTH_SHORT).show()
             }
-
         })
-
         var test = ManualProject(145,"kdsalfjlsjdfl;ajdsl;fjl;kajsdf")
         testList.add(test)
         test = ManualProject(1865,"kdsalfjlsjdfl;ajdsl;fjl;kajsdf")
@@ -67,31 +68,36 @@ class ArchiveFragment: Fragment() {
         })
         adapter.projects = testList
         val layoutManager = LinearLayoutManager(requireContext())
-       //  Toast.makeText(activity, adapter.projects[0].text,Toast.LENGTH_SHORT).show()
-
         binding.recyclerView.layoutManager = layoutManager
         binding.recyclerView.adapter = adapter
-
+        binding.toolbar.title = getString(R.string.app_name)
         return binding.root
     }
 
     private fun goBack() {
-        requireActivity().onBackPressed()
+       navigator().goBack()
+    }
+
+    private fun goToArchive() {
+        navigator().goToArchive()
+    }
+    private fun goToHelperScreen()
+    {
+        navigator().showHelperScreen()
     }
 
     private fun getCounterValue():Int = requireArguments().getInt(ARG_COUNTER_VALUE)
 
     private fun getQuote():String =requireArguments().getString(ARG_QUOTE)!!
 
-    private fun launchNext(){
-        val fragment = HelperFragment.newInstance(counterValue = (requireActivity() as MainActivity).getScreensCount()+1, quote = (requireActivity() as MainActivity).createQuote()  )
+    private  fun launchWorkbench(id: Long){
+        navigator().showDrawingWorkbench(id)
     }
-private val manualProjectsListener:ManualProjectsListener= {
-    adapter.projects=it
-}
 
+    private val manualProjectsListener:ManualProjectsListener= {
+        adapter.projects=it
+    }
     companion object{
-
         @JvmStatic
         private val ARG_COUNTER_VALUE="ARG_COUNTER_VALUE"
         @JvmStatic
@@ -106,7 +112,18 @@ private val manualProjectsListener:ManualProjectsListener= {
             fragment.arguments= args
             return fragment
         }
-
     }
 
+    private fun cancellation()
+    {}
+
+    override fun getCustomAction(): CustomAction {
+        return CustomAction(
+            iconRes = R.drawable.ic_arrow_back,
+            textRes = R.string.back,
+        onCustomAction = Runnable {
+            cancellation()
+        }
+        )
+    }
 }

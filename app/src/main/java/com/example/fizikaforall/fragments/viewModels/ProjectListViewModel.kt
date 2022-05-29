@@ -13,10 +13,7 @@ class ProjectListViewModel(
     private val _projects = MutableLiveData<List<ManualProject>>()
     val projects : LiveData<List<ManualProject>> = _projects
 
-
-    init{
-        loadProject()
-    }
+    init{}
 
     override fun onCleared() {
         super.onCleared()
@@ -35,5 +32,4 @@ class ProjectListViewModel(
     private val listener : ManualProjectsListener = {
         _projects.value = it
     }
-
 }

@@ -1,68 +1,74 @@
 package com.example.fizikaforall
 
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleObserver
 import com.example.fizikaforall.databinding.ActivityMainBinding
 import com.example.fizikaforall.fragments.ArchiveFragment
+import com.example.fizikaforall.fragments.DrawingWorkbenchFragment
 import com.example.fizikaforall.fragments.HelperFragment
-import com.example.fizikaforall.fragments.contract.Navigator
-import com.example.fizikaforall.fragments.contract.ResultListener
+import com.example.fizikaforall.fragments.contract.*
 
 class MainActivity : AppCompatActivity(),Navigator {
 
     private lateinit var binding: ActivityMainBinding
+
+    private val currentFragment: Fragment
+        get()= supportFragmentManager.findFragmentById(R.id.fragmentContainer)!!
+
+    private val fragmentListener = object : FragmentManager.FragmentLifecycleCallbacks(){
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding= ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater).also { setContentView(it.root) }
         setContentView(binding.root)
-
-        setSupportActionBar(binding.toolbar)
-
-
-        if (savedInstanceState == null){
-           /* val fragment= ArchiveFragment.newInstance(
-                counterValue = 1,
-                quote = "adfasdfadsfadsfadsfasdfasdfasdfadsfasdfasdfadsfa"
-            )*/
-            supportFragmentManager
+       // setSupportActionBar(binding.toolbar)
+        if (savedInstanceState == null) {
+        supportFragmentManager
                 .beginTransaction()
-                .add(R.id.fragmentContainer,ArchiveFragment())
+                .add(R.id.fragmentContainer, ArchiveFragment())
                 .commit()
-
         }
+        supportFragmentManager.registerFragmentLifecycleCallbacks(fragmentListener, false)
+
     }
-    fun createQuote(): String{
-        return "askdjfhkjahdsf"
-    }
+
     fun getScreensCount():Int{
         return supportFragmentManager.backStackEntryCount+1
     }
 
     override fun showHelperScreen() {
-        TODO("Not yet implemented")
+        launchFragment(HelperFragment())
     }
 
-
-    override fun showCongratulationsScreen() {
-        TODO("Not yet implemented")
+    override fun showDrawingWorkbench(id: Long) {
+        launchFragment(DrawingWorkbenchFragment.newInstance(
+            counterValue = id
+        ))
     }
 
     override fun goBack() {
        onBackPressed()
     }
 
-    override fun goToMenu() {
+    override fun goToArchive() {
         supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
     override fun <T : Parcelable> publishResult(result: T) {
         TODO("Not yet implemented")
     }
-
     override fun <T : Parcelable> listenResult(
         clazz: Class<T>,
         owner: LifecycleObserver,
@@ -70,7 +76,6 @@ class MainActivity : AppCompatActivity(),Navigator {
     ) {
         TODO("Not yet implemented")
     }
-
     private fun launchFragment(fragment: Fragment) {
         supportFragmentManager
             .beginTransaction()
@@ -78,5 +83,57 @@ class MainActivity : AppCompatActivity(),Navigator {
             .replace(R.id.fragmentContainer, fragment)
             .commit()
     }
+   /* override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        updateUi()
+        return true
+    }
 
+    private fun updateUi() {
+        Toast.makeText(this,"ghjghj",Toast.LENGTH_LONG).show()
+        val fragment = currentFragment
+        if (fragment is HasCustomTitle) {
+            binding.toolbar.title = getString(fragment.getTitleRes())
+        } else {
+            binding.toolbar.title = getString(R.string.app_name)
+        }
+        if (fragment is HasCustomAction) {
+            createCustomToolbarAction(fragment.getCustomAction())
+        } else {
+            binding.toolbar.menu.clear()
+        }
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.setDisplayShowHomeEnabled(true)
+        } else {
+            supportActionBar?.setDisplayHomeAsUpEnabled(false)
+            supportActionBar?.setDisplayShowHomeEnabled(false)
+        }
+
+    }
+
+
+    private fun createCustomToolbarAction(action: CustomAction) {
+        binding.toolbar.menu.clear()
+
+        val iconDrawable = DrawableCompat.wrap(ContextCompat.getDrawable(this,action.iconRes)!!)
+        iconDrawable.setTint(Color.WHITE)
+
+        val menuItem = binding.toolbar.menu.add(action.textRes)
+        menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        menuItem.icon = iconDrawable
+        menuItem.setOnMenuItemClickListener {
+            action.onCustomAction.run()
+            return@setOnMenuItemClickListener true
+        }
+    }
+*/
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        supportFragmentManager.unregisterFragmentLifecycleCallbacks(fragmentListener)
+    }
 }

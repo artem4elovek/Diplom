@@ -5,5 +5,11 @@
     <string name="delete">удалить</string>
     <string name="moveUp">поставить выше</string>
     <string name="moveDown">поставить ниже</string>
-
+    <string name="helperTitle">Справочник</string>
+    <string name="back">Отмена</string>
+    <string name="resistor">Резистор</string>
+    <string name="power">Питание</string>
+    <string name="voltmeter">Вольтметр</string>
+    <string name="cable">Проводка</string>
+    <string name="branching">Разветвление</string>
 </resources>

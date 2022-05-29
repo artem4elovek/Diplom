@@ -11,13 +11,10 @@ fun Fragment.navigator(): Navigator {
 }
 
 interface Navigator {
-        //fun showBoxSelectionScreen(options: Options)
-      //  fun showOptionsScreen(options: Options)
         fun showHelperScreen()
-        fun showCongratulationsScreen()
+        fun showDrawingWorkbench(id: Long)
         fun goBack()
-        fun goToMenu()
+        fun goToArchive()
         fun<T: Parcelable> publishResult(result: T)
         fun <T: Parcelable> listenResult(clazz: Class<T>,owner:LifecycleObserver, listener: ResultListener<T>)
-
 }

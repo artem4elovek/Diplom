@@ -1,4 +1,4 @@
-package com.example.fizikaforall
+package com.example.fizikaforall.electricity
 
 abstract class AbstractDetails {
     constructor()

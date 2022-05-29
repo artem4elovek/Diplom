@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:title="@string/resistor"
+        android:icon="@drawable/ic_resistor"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="2" />
+
+    <item android:title="@string/voltmeter"
+        android:icon="@drawable/ic_voltmeter"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="3"/>
+
+    <item android:title="@string/power"
+        android:icon="@drawable/ic_power"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="1" />
+
+    <item android:title="@string/cable"
+        android:icon="@drawable/ic_wire"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="0" />
+</menu>

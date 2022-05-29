@@ -8,12 +8,14 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.fizikaforall.App
 import com.example.fizikaforall.MainActivity
+import com.example.fizikaforall.R
 import com.example.fizikaforall.adapters.HelperAdapter
 import com.example.fizikaforall.databinding.ActivityMainBinding
 import com.example.fizikaforall.databinding.FragmentRecuclerBinding
+import com.example.fizikaforall.fragments.contract.HasCustomTitle
 import com.example.fizikaforall.manual.ManualHelperService
 
-class HelperFragment: Fragment() {
+class HelperFragment: Fragment(),HasCustomTitle {
     private lateinit var binding: FragmentRecuclerBinding
     private lateinit var adapter :HelperAdapter
 
@@ -29,39 +31,10 @@ class HelperFragment: Fragment() {
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
-
-
-
     private fun goBack() {
         requireActivity().onBackPressed()
     }
 
-    private fun getCountervalue():Int = requireArguments().getInt(ARG_COUNTER_VALUE)
-
-    private fun getQuote():String =requireArguments().getString(ARG_QUOTE)!!
-
-    private fun launchNext(){
-        val fragment = HelperFragment.newInstance(counterValue = (requireActivity() as MainActivity).getScreensCount()+1, quote = (requireActivity() as MainActivity).createQuote()  )
-    }
-
-    companion object{
-
-        @JvmStatic
-        private val ARG_COUNTER_VALUE="ARG_COUNTER_VALUE"
-        @JvmStatic
-        private val ARG_QUOTE="ARG_QUOTE"
-
-        @JvmStatic
-        fun newInstance(counterValue: Int,quote: String):HelperFragment{
-            val args = Bundle().apply {
-                putInt(ARG_COUNTER_VALUE,counterValue)
-                putString(ARG_QUOTE,quote)
-            }
-            val fragment = HelperFragment()
-            fragment.arguments= args
-            return fragment
-        }
-
-    }
+    override fun getTitleRes(): Int  = R.string.helperTitle
 
 }
