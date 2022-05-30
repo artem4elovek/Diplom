@@ -24,7 +24,7 @@ import com.example.fizikaforall.fragments.viewModels.ProjectListViewModel
 import com.example.fizikaforall.manual.ManualProject
 import com.example.fizikaforall.adapters.ArchiveAdapter as ArchiveAdapter1
 
-class ArchiveFragment: Fragment(),HasCustomAction {
+class ArchiveFragment: Fragment() {
     private lateinit var binding: FragmentRecuclerBinding
     private lateinit var adapter : ArchiveAdapter1
     private val testList  = mutableListOf<ManualProject>()
@@ -70,7 +70,7 @@ class ArchiveFragment: Fragment(),HasCustomAction {
         val layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.layoutManager = layoutManager
         binding.recyclerView.adapter = adapter
-        binding.toolbar.title = getString(R.string.app_name)
+        //binding.toolbar.title = getString(R.string.app_name)
         return binding.root
     }
 
@@ -117,7 +117,7 @@ class ArchiveFragment: Fragment(),HasCustomAction {
     private fun cancellation()
     {}
 
-    override fun getCustomAction(): CustomAction {
+   /* override fun getCustomAction(): CustomAction {
         return CustomAction(
             iconRes = R.drawable.ic_arrow_back,
             textRes = R.string.back,
@@ -125,5 +125,5 @@ class ArchiveFragment: Fragment(),HasCustomAction {
             cancellation()
         }
         )
-    }
+    }*/
 }

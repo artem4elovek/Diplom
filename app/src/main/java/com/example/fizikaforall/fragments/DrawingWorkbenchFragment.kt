@@ -5,6 +5,7 @@ import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.fizikaforall.adapters.HelperAdapter
 import com.example.fizikaforall.databinding.FragmentDrawingWorkbenchBinding
@@ -17,41 +18,32 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.example.fizikaforall.R
+import com.example.fizikaforall.draftsman.PaintEngine
 import com.example.fizikaforall.draftsman.ProjectCanvasView
 
 
-class DrawingWorkbenchFragment:Fragment(){
+class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
     private lateinit var binding: FragmentDrawingWorkbenchBinding
     private  var surfaceCanvas = ProjectCanvasView()
+    private lateinit var engine :PaintEngine
 
     override fun onCreateView(inflater: LayoutInflater,container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding= FragmentDrawingWorkbenchBinding.inflate(inflater,container,false)
         binding.bottomNavigator.inflateMenu(com.example.fizikaforall.R.menu.menu_drawing_bottom)
-        toolBarConstructor(CustomAction(
-            iconRes = R.drawable.ic_arrow_back,
-            textRes = R.string.back,
-            onCustomAction = Runnable {
-
+        binding.PaintDesk.holder.addCallback(ProjectCanvasView())
+        binding.PaintDesk.setOnTouchListener{_, event->
+            when(event.action) {
+                MotionEvent.ACTION_DOWN,MotionEvent.ACTION_MOVE->{
+                    //var a =ProjectCanvasView(500f,500f)
+                    //binding.PaintDesk.holder.addCallback(a)
+                    aaa(event.x.toString()+"  "+event.y.toString())
+                true
+                }
             }
-        ))
-        toolBarConstructor(CustomAction(
-            iconRes = R.drawable.ic_arrow_forward,
-            textRes = R.string.back,
-            onCustomAction = Runnable {
+            false
+        }
 
-            }
-        ))
-        toolBarConstructor(CustomAction(
-            iconRes = R.drawable.ic_save,
-            textRes = R.string.back,
-            onCustomAction = Runnable {
 
-            }
-        ))
-        //binding.PaintDesk.setBackgroundColor(Color.WHITE)
-        binding.PaintDesk.holder.addCallback(surfaceCanvas)
-
-       // surface .draw(Canvas(Bitmap.createBitmap(3,2,Bitmap.Config.ARGB_8888)))
         return binding.root
     }
     private fun getIdProject():Long = requireArguments().getLong(DrawingWorkbenchFragment.ARG_ID_PROJECT)
@@ -70,23 +62,30 @@ class DrawingWorkbenchFragment:Fragment(){
             fragment.arguments= args
             return fragment
         }
-
     }
-    private fun toolBarConstructor( action: CustomAction) {
-       // binding.toolbar.menu.clear()
 
-        val iconDrawable = DrawableCompat.wrap(ContextCompat.getDrawable(context!!,action.iconRes)!!)
-        iconDrawable.setTint(Color.WHITE)
 
-        val menuItem = binding.toolbar.menu.add(action.textRes)
-        menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-        menuItem.icon = iconDrawable
-        menuItem.setOnMenuItemClickListener {
-            action.onCustomAction.run()
-            return@setOnMenuItemClickListener true
+   private fun aaa(str:String){
+        Toast.makeText(requireActivity(), str, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun getCustomAction(): List<CustomAction> = listOf(CustomAction(
+        iconRes = R.drawable.ic_arrow_back,
+        textRes = R.string.back,
+        onCustomAction = Runnable {
+            engine.moveLine(449f,710f)
         }
-    }
+    ),CustomAction(
+        iconRes = R.drawable.ic_arrow_forward,
+        textRes = R.string.back,
+        onCustomAction = Runnable {
 
-    //override fun getTitleRes(): Int = com.example.fizikaforall.R.string.descriptionError
+        }
+    ),CustomAction(
+        iconRes = R.drawable.ic_save,
+        textRes = R.string.back,
+        onCustomAction = Runnable {
 
+        }
+    ))
 }

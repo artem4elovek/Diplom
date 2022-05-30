@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
 interface HasCustomAction {
-    fun getCustomAction():CustomAction
+    fun getCustomAction():List<CustomAction>
 }
 
 class CustomAction(

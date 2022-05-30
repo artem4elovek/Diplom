@@ -26,14 +26,18 @@ class MainActivity : AppCompatActivity(),Navigator {
     private val currentFragment: Fragment
         get()= supportFragmentManager.findFragmentById(R.id.fragmentContainer)!!
 
-    private val fragmentListener = object : FragmentManager.FragmentLifecycleCallbacks(){
+    private val fragmentListener = object : FragmentManager.FragmentLifecycleCallbacks() {
+        override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
+            super.onFragmentViewCreated(fm, f, v, savedInstanceState)
+            updateUi()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater).also { setContentView(it.root) }
         setContentView(binding.root)
-       // setSupportActionBar(binding.toolbar)
+        setSupportActionBar(binding.toolbar)
         if (savedInstanceState == null) {
         supportFragmentManager
                 .beginTransaction()
@@ -76,6 +80,56 @@ class MainActivity : AppCompatActivity(),Navigator {
     ) {
         TODO("Not yet implemented")
     }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+         updateUi()
+         return true
+     }
+
+     private fun updateUi() {
+         //Toast.makeText(this,supportFragmentManager.backStackEntryCount.toString(),Toast.LENGTH_LONG).show()
+         val fragment = currentFragment
+         if (fragment is HasCustomTitle) {
+             binding.toolbar.title = getString(fragment.getTitleRes())
+         } else {
+             binding.toolbar.title = getString(R.string.app_name)
+         }
+
+         if (supportFragmentManager.backStackEntryCount > 0) {
+             supportActionBar?.setDisplayHomeAsUpEnabled(true)
+             supportActionBar?.setDisplayShowHomeEnabled(true)
+         } else {
+             supportActionBar?.setDisplayHomeAsUpEnabled(false)
+             supportActionBar?.setDisplayShowHomeEnabled(false)
+         }
+
+         if (fragment is HasCustomAction) {
+             createCustomToolbarAction(fragment.getCustomAction())
+         } else {
+             binding.toolbar.menu.clear()
+         }
+     }
+
+
+     private fun createCustomToolbarAction(actions: List<CustomAction>) {
+        // binding.toolbar.menu.clear()
+
+         actions.forEach{
+            var action = it
+             val iconDrawable =
+                 DrawableCompat.wrap(ContextCompat.getDrawable(this, action.iconRes)!!)
+             iconDrawable.setTint(Color.WHITE)
+
+             val menuItem = binding.toolbar.menu.add(action.textRes)
+             menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+             menuItem.icon = iconDrawable
+             menuItem.setOnMenuItemClickListener {
+                 action.onCustomAction.run()
+                 return@setOnMenuItemClickListener true
+             }
+         }
+     }
+
+
     private fun launchFragment(fragment: Fragment) {
         supportFragmentManager
             .beginTransaction()
@@ -83,50 +137,6 @@ class MainActivity : AppCompatActivity(),Navigator {
             .replace(R.id.fragmentContainer, fragment)
             .commit()
     }
-   /* override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        updateUi()
-        return true
-    }
-
-    private fun updateUi() {
-        Toast.makeText(this,"ghjghj",Toast.LENGTH_LONG).show()
-        val fragment = currentFragment
-        if (fragment is HasCustomTitle) {
-            binding.toolbar.title = getString(fragment.getTitleRes())
-        } else {
-            binding.toolbar.title = getString(R.string.app_name)
-        }
-        if (fragment is HasCustomAction) {
-            createCustomToolbarAction(fragment.getCustomAction())
-        } else {
-            binding.toolbar.menu.clear()
-        }
-        if (supportFragmentManager.backStackEntryCount > 0) {
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
-        } else {
-            supportActionBar?.setDisplayHomeAsUpEnabled(false)
-            supportActionBar?.setDisplayShowHomeEnabled(false)
-        }
-
-    }
-
-
-    private fun createCustomToolbarAction(action: CustomAction) {
-        binding.toolbar.menu.clear()
-
-        val iconDrawable = DrawableCompat.wrap(ContextCompat.getDrawable(this,action.iconRes)!!)
-        iconDrawable.setTint(Color.WHITE)
-
-        val menuItem = binding.toolbar.menu.add(action.textRes)
-        menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-        menuItem.icon = iconDrawable
-        menuItem.setOnMenuItemClickListener {
-            action.onCustomAction.run()
-            return@setOnMenuItemClickListener true
-        }
-    }
-*/
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
