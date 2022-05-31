@@ -3,21 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:title="@string/resistor"
+        android:id="@+id/resistorItem"
         android:icon="@drawable/ic_resistor"
         app:showAsAction="ifRoom"
         android:orderInCategory="2" />
 
     <item android:title="@string/voltmeter"
+        android:id="@+id/voltmeterItem"
         android:icon="@drawable/ic_voltmeter"
         app:showAsAction="ifRoom"
         android:orderInCategory="3"/>
 
     <item android:title="@string/power"
+        android:id="@+id/powerItem"
         android:icon="@drawable/ic_power"
         app:showAsAction="ifRoom"
         android:orderInCategory="1" />
 
     <item android:title="@string/cable"
+        android:id="@+id/cableItem"
         android:icon="@drawable/ic_wire"
         app:showAsAction="ifRoom"
         android:orderInCategory="0" />

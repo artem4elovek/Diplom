@@ -15,6 +15,8 @@ import com.example.fizikaforall.R
 import com.example.fizikaforall.adapters.ArchiveActionListener
 import com.example.fizikaforall.databinding.FragmentDrawingWorkbenchBinding
 import com.example.fizikaforall.databinding.FragmentRecuclerBinding
+import com.example.fizikaforall.db_Projects.AppSQLiteHelper
+import com.example.fizikaforall.db_Projects.Repositories
 import com.example.fizikaforall.fragments.FragmentUtils.factory
 import com.example.fizikaforall.fragments.contract.CustomAction
 import com.example.fizikaforall.fragments.contract.HasCustomAction
@@ -22,12 +24,14 @@ import com.example.fizikaforall.fragments.contract.navigator
 import com.example.fizikaforall.manual.ManualProjectsListener
 import com.example.fizikaforall.fragments.viewModels.ProjectListViewModel
 import com.example.fizikaforall.manual.ManualProject
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import com.example.fizikaforall.adapters.ArchiveAdapter as ArchiveAdapter1
 
-class ArchiveFragment: Fragment() {
+class ArchiveFragment: Fragment(),HasCustomAction {
     private lateinit var binding: FragmentRecuclerBinding
     private lateinit var adapter : ArchiveAdapter1
-    private val testList  = mutableListOf<ManualProject>()
+    private var testList  = mutableListOf<ManualProject>()
 
     private val viewModel: ProjectListViewModel by viewModels{factory()}
 
@@ -39,7 +43,7 @@ class ArchiveFragment: Fragment() {
         binding= FragmentRecuclerBinding.inflate(inflater,container,false)
         adapter = ArchiveAdapter1(object : ArchiveActionListener {
             override fun onProjectSelected(manualProject: ManualProject) {
-                launchWorkbench(manualProject.id)
+                launchWorkbench(manualProject.id.toLong())
             }
             override fun onProjectDelete(manualProject: ManualProject) {
                 Toast.makeText(activity, "dadfa",Toast.LENGTH_SHORT).show()
@@ -48,10 +52,16 @@ class ArchiveFragment: Fragment() {
                 Toast.makeText(activity, "dadfa",Toast.LENGTH_SHORT).show()
             }
         })
-        var test = ManualProject(145,"kdsalfjlsjdfl;ajdsl;fjl;kajsdf")
-        testList.add(test)
-        test = ManualProject(1865,"kdsalfjlsjdfl;ajdsl;fjl;kajsdf")
-        testList.add(test)
+        var bd = Repositories
+        bd.init(requireContext())
+        //bd.testCreatedbd()
+        //var test1= ManualProject(167,"kdsalfjlsjdfl;ajdsl;fjl;kajsdf")
+       /// test.add(test1)
+       // GlobalScope.launch {
+        var test =  bd.projectsRepositorySQL.getAllProjects()
+        //}
+        /*testList.add(test)
+        test
         test = ManualProject(167,"kdsalfjlsjdfl;ajdsl;fjl;kajsdf")
         testList.add(test)
         test = ManualProject(189,"kdsalfjlsjdfl;ajdsl;fjl;kajsdf")
@@ -61,12 +71,12 @@ class ArchiveFragment: Fragment() {
         test = ManualProject(18,"kdsalfjlsjdfl;ajdsl;fjl;kajsdf")
         testList.add(test)
         test = ManualProject(10,"kdsalfjlsjdfl;ajdsl;fjl;kajsdf")
-        testList.add(test)
+        testList.add(test)*/
 
         viewModel.projects.observe(viewLifecycleOwner, Observer{
             adapter.projects = it
         })
-        adapter.projects = testList
+        adapter.projects = test
         val layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.layoutManager = layoutManager
         binding.recyclerView.adapter = adapter
@@ -116,14 +126,25 @@ class ArchiveFragment: Fragment() {
 
     private fun cancellation()
     {}
+    private fun createdProject(){
+        launchWorkbench(1)
+    }
 
-   /* override fun getCustomAction(): CustomAction {
-        return CustomAction(
-            iconRes = R.drawable.ic_arrow_back,
-            textRes = R.string.back,
-        onCustomAction = Runnable {
-            cancellation()
-        }
-        )
-    }*/
+    override fun getCustomAction(): List<CustomAction> = listOf(CustomAction(
+            iconRes = R.drawable.ic_add,
+            textRes = R.string.addProject,
+            onCustomAction = Runnable {
+                createdProject()
+            }
+    ))
+
+    /* override fun getCustomAction(): CustomAction {
+         return CustomAction(
+             iconRes = R.drawable.ic_arrow_back,
+             textRes = R.string.back,
+         onCustomAction = Runnable {
+             cancellation()
+         }
+         )
+     }*/
 }

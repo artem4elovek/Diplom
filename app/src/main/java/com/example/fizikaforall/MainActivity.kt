@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity(),Navigator {
 
 
      private fun createCustomToolbarAction(actions: List<CustomAction>) {
-        // binding.toolbar.menu.clear()
+         binding.toolbar.menu.clear()
 
          actions.forEach{
             var action = it

@@ -17,30 +17,38 @@ import android.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.view.GravityCompat
 import com.example.fizikaforall.R
 import com.example.fizikaforall.draftsman.PaintEngine
 import com.example.fizikaforall.draftsman.ProjectCanvasView
+import com.example.fizikaforall.draftsman.TouchHandler
 
 
 class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
     private lateinit var binding: FragmentDrawingWorkbenchBinding
     private  var surfaceCanvas = ProjectCanvasView()
     private lateinit var engine :PaintEngine
+    private lateinit var touchHandler: TouchHandler
 
     override fun onCreateView(inflater: LayoutInflater,container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding= FragmentDrawingWorkbenchBinding.inflate(inflater,container,false)
         binding.bottomNavigator.inflateMenu(com.example.fizikaforall.R.menu.menu_drawing_bottom)
         binding.PaintDesk.holder.addCallback(ProjectCanvasView())
-        binding.PaintDesk.setOnTouchListener{_, event->
-            when(event.action) {
-                MotionEvent.ACTION_DOWN,MotionEvent.ACTION_MOVE->{
-                    //var a =ProjectCanvasView(500f,500f)
-                    //binding.PaintDesk.holder.addCallback(a)
-                    aaa(event.x.toString()+"  "+event.y.toString())
-                true
-                }
+        touchHandler = TouchHandler(requireActivity())
+
+        binding.bottomNavigator.setOnNavigationItemSelectedListener{ it->
+            when(it.itemId)
+            {
+                R.id.resistorItem -> touchHandler.resistorChoice()
+                R.id.voltmeterItem ->touchHandler.voltmeterChoice()
+                R.id.cableItem ->touchHandler.cableChoice()
+                R.id.powerItem -> touchHandler.powerChoice()
             }
-            false
+            true
+        }
+
+        binding.PaintDesk.setOnTouchListener{_, event ->touchHandler.runTouch(event)
+            true
         }
 
 

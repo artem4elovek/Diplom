@@ -4,7 +4,7 @@ import android.view.SurfaceHolder
 
 class PaintEngine(private val surfaceHolder: SurfaceHolder) {
 
-
+    private val surfaceHolder1: SurfaceHolder = surfaceHolder
 
     fun moveLine(x:Float,y:Float){
         var projectCanvasView = ProjectCanvasView()

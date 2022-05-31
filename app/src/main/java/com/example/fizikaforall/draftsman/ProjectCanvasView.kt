@@ -7,6 +7,9 @@ import android.view.SurfaceHolder
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.example.fizikaforall.R
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class ProjectCanvasView : SurfaceHolder.Callback {
@@ -34,8 +37,15 @@ class ProjectCanvasView : SurfaceHolder.Callback {
         paint.color = Color.RED
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 25f
-        canvas.drawLine(100f,100f,x,y, paint)
+        canvas.drawLine(300f,100f,x,y, paint)
         p0.unlockCanvasAndPost(canvas)
+
+        /*GlobalScope.launch(Dispatchers.Main) {
+        for (k in 1 until 800 ) {
+            canvas.drawLine(100f, 100f, k.toFloat(), k.toFloat(), paint)
+            p0.unlockCanvasAndPost(canvas)
+            delay(1000L)
+        }}*/
     }
 
     override fun surfaceChanged(p0: SurfaceHolder, p1: Int, p2: Int, p3: Int) {

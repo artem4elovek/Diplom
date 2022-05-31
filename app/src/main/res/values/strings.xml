@@ -12,4 +12,5 @@
     <string name="voltmeter">Вольтметр</string>
     <string name="cable">Проводка</string>
     <string name="branching">Разветвление</string>
+    <string name="addProject">добавить проект</string>
 </resources>
