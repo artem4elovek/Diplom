@@ -1,5 +1,6 @@
 package com.example.fizikaforall.fragments
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,7 +33,8 @@ import com.example.fizikaforall.adapters.ArchiveAdapter as ArchiveAdapter1
 class ArchiveFragment: Fragment(),HasCustomAction {
     private lateinit var binding: FragmentRecuclerBinding
     private lateinit var adapter : ArchiveAdapter1
-    private var testList  = mutableListOf<ManualProject>()
+    private lateinit var projectsList : List<ManualProject>
+
 
     private val viewModel: ProjectListViewModel by viewModels{factory()}
 
@@ -43,22 +46,24 @@ class ArchiveFragment: Fragment(),HasCustomAction {
         binding= FragmentRecuclerBinding.inflate(inflater,container,false)
         adapter = ArchiveAdapter1(object : ArchiveActionListener {
             override fun onProjectSelected(manualProject: ManualProject) {
-                launchWorkbench(manualProject.id.toLong())
+                launchWorkbench(manualProject.id)
             }
             override fun onProjectDelete(manualProject: ManualProject) {
-                Toast.makeText(activity, "dadfa",Toast.LENGTH_SHORT).show()
+                navigator().getRepository().projectsRepositorySQL.removeProjects(manualProject.id)
+                projectsList =  navigator().getRepository().projectsRepositorySQL.getProjects()
+                adapter.projects = projectsList
             }
             override fun onProjectMove(manualProject: ManualProject,moveBy: Int) {
                 Toast.makeText(activity, "dadfa",Toast.LENGTH_SHORT).show()
             }
         })
-        var bd = Repositories
+       /* var bd = Repositories
         bd.init(requireContext())
-        //bd.testCreatedbd()
+       */ //bd.testCreatedbd()
         //var test1= ManualProject(167,"kdsalfjlsjdfl;ajdsl;fjl;kajsdf")
        /// test.add(test1)
        // GlobalScope.launch {
-        var test =  bd.projectsRepositorySQL.getAllProjects()
+        projectsList =  navigator().getRepository().projectsRepositorySQL.getProjects()
         //}
         /*testList.add(test)
         test
@@ -76,7 +81,7 @@ class ArchiveFragment: Fragment(),HasCustomAction {
         viewModel.projects.observe(viewLifecycleOwner, Observer{
             adapter.projects = it
         })
-        adapter.projects = test
+        adapter.projects = projectsList
         val layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.layoutManager = layoutManager
         binding.recyclerView.adapter = adapter
@@ -100,7 +105,7 @@ class ArchiveFragment: Fragment(),HasCustomAction {
 
     private fun getQuote():String =requireArguments().getString(ARG_QUOTE)!!
 
-    private  fun launchWorkbench(id: Long){
+    private  fun launchWorkbench(id: Int){
         navigator().showDrawingWorkbench(id)
     }
 
@@ -127,8 +132,29 @@ class ArchiveFragment: Fragment(),HasCustomAction {
     private fun cancellation()
     {}
     private fun createdProject(){
-        launchWorkbench(1)
+        NewProjectDialogFragment.show(parentFragmentManager,projectsList.map{it.text}.toList())
+        NewProjectDialogFragment.setupListener(parentFragmentManager,this){
+            var  result = navigator().getRepository().projectsRepositorySQL.newProjects(it)
+            if (result >0){launchWorkbench(result)}
+        }
+
+
+      //  launchWorkbench(navigator().getRepository().projectsRepositorySQL.newProjects("Проверочный"))
     }
+
+   /* private fun setupSimpleDialogFragmentListener() {
+        parentFragmentManager.setFragmentResultListener(NewProjectDialogFragment().REQUEST_KEY, this, FragmentResultListener { _, result ->
+            val which = result.getInt(NewProjectDialogFragment().KEY_RESPONSE)
+            when (which) {
+                DialogInterface. -> showToast(R.string.uninstall_confirmed)
+                DialogInterface.BUTTON_NEGATIVE -> showToast(R.string.uninstall_rejected)
+                DialogInterface.BUTTON_NEUTRAL -> {
+                    showToast(R.string.uninstall_ignored)
+                }
+            }
+        })
+    }*/
+
 
     override fun getCustomAction(): List<CustomAction> = listOf(CustomAction(
             iconRes = R.drawable.ic_add,
@@ -138,13 +164,4 @@ class ArchiveFragment: Fragment(),HasCustomAction {
             }
     ))
 
-    /* override fun getCustomAction(): CustomAction {
-         return CustomAction(
-             iconRes = R.drawable.ic_arrow_back,
-             textRes = R.string.back,
-         onCustomAction = Runnable {
-             cancellation()
-         }
-         )
-     }*/
 }

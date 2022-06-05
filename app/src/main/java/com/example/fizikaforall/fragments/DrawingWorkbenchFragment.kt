@@ -19,6 +19,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.GravityCompat
 import com.example.fizikaforall.R
+import com.example.fizikaforall.draftsman.DetailPrint
 import com.example.fizikaforall.draftsman.PaintEngine
 import com.example.fizikaforall.draftsman.ProjectCanvasView
 import com.example.fizikaforall.draftsman.TouchHandler
@@ -26,20 +27,23 @@ import com.example.fizikaforall.draftsman.TouchHandler
 
 class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
     private lateinit var binding: FragmentDrawingWorkbenchBinding
-    private  var surfaceCanvas = ProjectCanvasView()
+   // private  var surfaceCanvas = ProjectCanvasView()
+   private var list = mutableListOf<DetailPrint>()
     private lateinit var engine :PaintEngine
     private lateinit var touchHandler: TouchHandler
 
-    override fun onCreateView(inflater: LayoutInflater,container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding= FragmentDrawingWorkbenchBinding.inflate(inflater,container,false)
         binding.bottomNavigator.inflateMenu(com.example.fizikaforall.R.menu.menu_drawing_bottom)
-        binding.PaintDesk.holder.addCallback(ProjectCanvasView())
-        touchHandler = TouchHandler(requireActivity())
+        engine = PaintEngine(requireContext())
 
+        binding.PaintDesk.holder.addCallback(ProjectCanvasView(engine))
+        touchHandler = TouchHandler(engine,requireActivity(),list)
         binding.bottomNavigator.setOnNavigationItemSelectedListener{ it->
             when(it.itemId)
             {
-                R.id.resistorItem -> touchHandler.resistorChoice()
+                R.id.resistorItem ->  touchHandler.resistorChoice()
                 R.id.voltmeterItem ->touchHandler.voltmeterChoice()
                 R.id.cableItem ->touchHandler.cableChoice()
                 R.id.powerItem -> touchHandler.powerChoice()
@@ -54,7 +58,7 @@ class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
 
         return binding.root
     }
-    private fun getIdProject():Long = requireArguments().getLong(DrawingWorkbenchFragment.ARG_ID_PROJECT)
+    private fun getIdProject():Int = requireArguments().getInt(DrawingWorkbenchFragment.ARG_ID_PROJECT)
 
     companion object{
 
@@ -62,9 +66,9 @@ class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
         private val ARG_ID_PROJECT="ARG_ID_PROJECT"
 
         @JvmStatic
-        fun newInstance(counterValue: Long): DrawingWorkbenchFragment{
+        fun newInstance(counterValue: Int): DrawingWorkbenchFragment{
             val args = Bundle().apply {
-                putLong(ARG_ID_PROJECT,counterValue)
+                putInt(ARG_ID_PROJECT,counterValue)
             }
             val fragment =  DrawingWorkbenchFragment()
             fragment.arguments= args
@@ -81,7 +85,6 @@ class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
         iconRes = R.drawable.ic_arrow_back,
         textRes = R.string.back,
         onCustomAction = Runnable {
-            engine.moveLine(449f,710f)
         }
     ),CustomAction(
         iconRes = R.drawable.ic_arrow_forward,
@@ -96,4 +99,19 @@ class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
 
         }
     ))
+/*
+
+    fun toObject(stringValue: String): MutableList<DetailPrint> {
+        return JSON.parse(Field.serializer(), stringValue)
+    }
+
+    fun toJson(field: Field): String {
+        // Обратите внимание, что мы вызываем Serializer, который автоматически сгенерирован из нашего класса
+        // Сразу после того, как мы добавили аннотацию @Serializer
+        return JSON.stringify(Field.serializer(), field)
+    }
+
+
+*/
+
 }

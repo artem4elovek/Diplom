@@ -3,6 +3,7 @@ package com.example.fizikaforall.electricity
 import com.example.fizikaforall.manual.ManualProject
 import java.util.*
 
+/*
 class Cable {
     private var cable =  mutableListOf<Resistor>()
 
@@ -20,4 +21,4 @@ class Cable {
         }
     }
     fun getAllResistance():Resistance= Resistance(cable.map{it.resistance.resistance}.sum())
-}
+}*/

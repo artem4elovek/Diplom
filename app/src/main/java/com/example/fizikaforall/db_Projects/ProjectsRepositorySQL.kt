@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
+import java.lang.reflect.Field
+
 
 class ProjectsRepositorySQL(
     private val db: SQLiteDatabase,
@@ -20,9 +22,9 @@ class ProjectsRepositorySQL(
 
 ):ProjectInterface {
 
-    private val reconstructFlow = MutableSharedFlow<Unit>(replay = 1).also { it.tryEmit(Unit) }
+   // private val reconstructFlow = MutableSharedFlow<Unit>(replay = 1).also { it.tryEmit(Unit) }
 
-     fun getAllProjects(): List<ManualProject> {
+    private fun getAllProjects(): List<ManualProject> {
         val cursor = db.query(
             ProjectsTable.NAME_TABLE,
             arrayOf(ProjectsTable.ID_COLUMN, ProjectsTable.NAME_PROJECT),
@@ -44,6 +46,7 @@ class ProjectsRepositorySQL(
     }
 
     private fun newProject(name: String): Int {
+        var result : Int = 0
         try {
             db.insertOrThrow(
                 ProjectsTable.NAME_TABLE,
@@ -51,9 +54,7 @@ class ProjectsRepositorySQL(
                 contentValuesOf(ProjectsTable.NAME_PROJECT to name)
             )
         } catch (e: SQLiteConstraintException) {
-         /*   val appException = NameProjectException()
-            appException.initCause(e)
-            throw appException*/
+            result = -1
         }
         val cursor = db.query(
             ProjectsTable.NAME_TABLE,
@@ -62,29 +63,39 @@ class ProjectsRepositorySQL(
             arrayOf(name),
             null, null, null
         )
-        return cursor.use {
+        return if (result == 0 ) cursor.use {
             if (cursor.count != 0) cursor.moveToFirst()
             cursor.getInt(cursor.getColumnIndexOrThrow(ProjectsTable.ID_COLUMN))
         }
+        else result
     }
 
-    override suspend fun getProjects(onlyActive: Boolean): Flow<List<ManualProject>> {
-       return combine(reconstructFlow) {_ ->
-            getAllProjects()
-        }.flowOn(ioDispatcher)
+    override fun getProjects(): List<ManualProject> =  getAllProjects()
+    override fun renameProjects(id: Int, name: String) {
+      /*  db.update(ProjectsTable.NAME_TABLE,
+            ProjectsTable.NAME_PROJECT,
+
+            ProjectsTable.ID_COLUMN+"=?"
+            )*/
     }
+
+    override fun newProjects(name: String):Int =  newProject(name)
+    override fun removeProjects(id:Int) {
+        db.delete(
+            ProjectsTable.NAME_TABLE,
+            ProjectsTable.ID_COLUMN+"=?"
+        ,arrayOf(id.toString())
+        )
+    }
+
+
+    /* override suspend fun getProjects(onlyActive: Boolean): Flow<List<ManualProject>> {
+        return combine(reconstructFlow) {_ ->
+             getAllProjects()
+         }.flowOn(ioDispatcher)
+     }*/
 
 
 }
 
 
-/*
-suspend fun <T> wrapSQLiteException(dispatcher: CoroutineDispatcher, block: suspend CoroutineScope.() -> T): T {
-    try {
-        return withContext(dispatcher, block)
-    } catch (e: SQLiteException) {
-        val appException = StorageException()
-        appException.initCause(e)
-        throw appException
-    }
-}*/

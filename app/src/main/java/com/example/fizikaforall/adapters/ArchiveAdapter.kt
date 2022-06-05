@@ -77,16 +77,14 @@ class ArchiveAdapter(
         popupMenu.menu.add(0,ID_MOVE_UP, Menu.NONE,context.getString(R.string.moveUp)).apply {
             isEnabled = position>0
         }
-        popupMenu.menu.add(1,ID_MOVE_DOWN, Menu.NONE,context.getString(R.string.moveDown)).apply {
-            isEnabled = position< projects.size-1
-        }
+        popupMenu.menu.add(1,ID_RENAME, Menu.NONE,context.getString(R.string.rename))
         popupMenu.menu.add(2,ID_DEL, Menu.NONE,context.getString(R.string.delete))
         popupMenu.setOnMenuItemClickListener {
             when(it.itemId){
                 ID_MOVE_UP -> {
                     archiveActionListener.onProjectMove(project,-1)
                 }
-                ID_MOVE_DOWN->{
+                ID_RENAME ->{
                     archiveActionListener.onProjectMove(project,1)
                 }
                 ID_DEL->{
@@ -100,7 +98,7 @@ class ArchiveAdapter(
 
     companion object{
         private const val ID_MOVE_UP = 1
-        private const val ID_MOVE_DOWN = 2
+        private const val ID_RENAME = 2
         private const val ID_DEL = 3
 
     }

@@ -2,7 +2,7 @@ PRAGMA FOREIGN_KEYS = ON;
 
 CREATE TABLE "Projects"(
 	"idProject" INTEGER NOT NULL UNIQUE,
-	"nameProject" TEXT NOT NULL,
+	"nameProject" TEXT NOT NULL UNIQUE,
 	PRIMARY KEY("idProject" AUTOINCREMENT)
 );
 

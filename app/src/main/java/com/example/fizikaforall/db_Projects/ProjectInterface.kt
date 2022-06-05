@@ -5,22 +5,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface ProjectInterface {
 
-        /**
-         * Get the list of boxes.
-         * @param onlyActive if set to `true` then only active boxes are emitted.
-         */
-        suspend fun getProjects(onlyActive: Boolean = false): Flow<List<ManualProject>>
 
-        /**
-         * Mark the specified box as active. Only active boxes are displayed in dashboard screen.
-         * @throws StorageException
-         */
-        ///suspend fun activateBox(box: Box)
-
-        /**
-         * Mark the specified box as inactive. Inactive boxes are not displayed in dashboard screen.
-         * @throws StorageException
-         */
-        //suspend fun deactivateBox(box: Box)
+        //suspend fun getProjects(onlyActive: Boolean = false): Flow<List<ManualProject>>
+        fun getProjects(): List<ManualProject>
+        fun renameProjects(id:Int,name:String)
+        fun newProjects(name:String): Int
+        fun removeProjects(id:Int)
 
     }

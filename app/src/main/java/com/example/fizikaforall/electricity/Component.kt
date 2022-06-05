@@ -1,4 +1,5 @@
 package com.example.fizikaforall.electricity
+/*
 
 data class Component(
    val resistor: Resistor,
@@ -8,3 +9,4 @@ data class Component(
 
 
 )
+*/

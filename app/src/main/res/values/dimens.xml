@@ -3,8 +3,8 @@
     <dimen name="length">100dp</dimen>
     <dimen name="titleScale">28sp</dimen>
     <dimen name="textScale">24sp</dimen>
-    <dimen name="ItemArchive">54dp</dimen>>
-    <dimen name="spaceArchive">4dp</dimen>>
-
+    <dimen name="ItemArchive">54dp</dimen>
+    <dimen name="spaceArchive">4dp</dimen>
+    <dimen name="closeDimen">20dp</dimen>
 
 </resources>

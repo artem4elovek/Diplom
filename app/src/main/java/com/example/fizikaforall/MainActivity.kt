@@ -1,5 +1,6 @@
 package com.example.fizikaforall
 
+import android.database.sqlite.SQLiteDatabase
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -14,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleObserver
 import com.example.fizikaforall.databinding.ActivityMainBinding
+import com.example.fizikaforall.db_Projects.Repositories
 import com.example.fizikaforall.fragments.ArchiveFragment
 import com.example.fizikaforall.fragments.DrawingWorkbenchFragment
 import com.example.fizikaforall.fragments.HelperFragment
@@ -22,7 +24,7 @@ import com.example.fizikaforall.fragments.contract.*
 class MainActivity : AppCompatActivity(),Navigator {
 
     private lateinit var binding: ActivityMainBinding
-
+    private val database = Repositories
     private val currentFragment: Fragment
         get()= supportFragmentManager.findFragmentById(R.id.fragmentContainer)!!
 
@@ -56,7 +58,8 @@ class MainActivity : AppCompatActivity(),Navigator {
         launchFragment(HelperFragment())
     }
 
-    override fun showDrawingWorkbench(id: Long) {
+
+    override fun showDrawingWorkbench(id: Int) {
         launchFragment(DrawingWorkbenchFragment.newInstance(
             counterValue = id
         ))
@@ -80,6 +83,12 @@ class MainActivity : AppCompatActivity(),Navigator {
     ) {
         TODO("Not yet implemented")
     }
+
+    override fun getRepository(): Repositories {
+        database.init(this)
+        return database
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
          updateUi()
          return true

@@ -47,7 +47,7 @@
         android:layout_marginStart="0dp"
         android:layout_marginEnd="0dp"
         android:layout_marginBottom="-4dp"
-        android:background="#00FFFFFF"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
         android:backgroundTint="#000000"
         android:scaleType="fitCenter"
         app:srcCompat="@drawable/ic_option" />

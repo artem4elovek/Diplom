@@ -13,4 +13,9 @@
     <string name="cable">Проводка</string>
     <string name="branching">Разветвление</string>
     <string name="addProject">добавить проект</string>
+    <string name="ProjectSave">Ок</string>
+    <string name="CancelProject">Отмена</string>
+    <string name="enterProject">Введите название</string>
+    <string name="standardNameProject">Мой проект</string>
+    <string name="rename">Переименовать</string>
 </resources>
