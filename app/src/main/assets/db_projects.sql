@@ -6,40 +6,47 @@ CREATE TABLE "Projects"(
 	PRIMARY KEY("idProject" AUTOINCREMENT)
 );
 
-
-CREATE TABLE "ComponentsInProject"(
-	"IdComponents" INTEGER NOT NULL,
-	"posX" REAL,
-	"posY" REAL,
-	"rotation" REAL,
-	"typeComponent" TEXT NOT NULL,
-	"projectId" INTEGER NOT NULL,
-	FOREIGN KEY("projectId") REFERENCES "Projects"("idProject")
-	PRIMARY KEY("IdComponents" AUTOINCREMENT)
+CREATE TABLE "details" (
+	"id"	INTEGER NOT NULL UNIQUE,
+	"id_project"	INTEGER NOT NULL,
+	"x_pos"	REAL NOT NULL,
+	"y_pos"	REAL NOT NULL,
+	"size"	INTEGER NOT NULL,
+	"rotation"	INTEGER NOT NULL,
+	"type"	INTEGER,
+	FOREIGN KEY("id_project") REFERENCES "Projects"("idProject") ON DELETE CASCADE,
+	PRIMARY KEY("id")
 );
+
+CREATE TABLE "dots_contact" (
+	"id"	INTEGER NOT NULL UNIQUE,
+	"id_detail"	INTEGER NOT NULL,
+	"x_pos"	REAL NOT NULL,
+	"y_pos"	REAL NOT NULL,
+	FOREIGN KEY("id_detail") REFERENCES "details"("id")  ON DELETE CASCADE,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+CREATE TABLE "power" (
+	"id"	INTEGER NOT NULL UNIQUE,
+	"id_detail"	INTEGER NOT NULL UNIQUE,
+	"powers"	INTEGER NOT NULL,
+	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("id_detail") REFERENCES "details"("id")  ON DELETE CASCADE
+);
+CREATE TABLE "resistor" (
+	"id"	INTEGER NOT NULL UNIQUE,
+	"id_detail"	INTEGER NOT NULL UNIQUE,
+	"resistance"	REAL NOT NULL,
+	FOREIGN KEY("id_detail") REFERENCES "details"("id")  ON DELETE CASCADE,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+
+INSERT INTO "Projects" (nameProject,idProject)
+VALUES('Временный проект', 0);
 
 INSERT INTO "Projects" (nameProject)
 VALUES('Стартовый проект');
 
-
-INSERT INTO "ComponentsInProject" ("posX","posY","projectId","typeComponent","rotation" )
-VALUES(100,100,1,1,0);
-
-INSERT INTO "ComponentsInProject" ("posX","posY","projectId","typeComponent", "rotation" )
-VALUES(200,200,1,1,0);
-
-INSERT INTO "ComponentsInProject" ("posX","posY","projectId","typeComponent","rotation" )
-VALUES(100,100,1,1,0),
-(200,200,1,1,0);
-
 UPDATE "Projects"
 SET "nameProject" = 'Обновленный проект'
 WHERE "idProject" = 1;
-
-UPDATE "ComponentsInProject"
-SET "posX" = 200.0,
-	"posY" = 200.0,
-	"rotation" = 200
-WHERE "IdComponents" = 1;
-
-

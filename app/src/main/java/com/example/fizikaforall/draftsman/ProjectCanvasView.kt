@@ -13,72 +13,63 @@ import kotlinx.coroutines.*
 
 class ProjectCanvasView(private val paintEngine: PaintEngine) : SurfaceHolder.Callback {
 
-    private lateinit var canvas: Canvas
-    private lateinit var bitmap: Bitmap
     private lateinit var drawingJob: Job
-    private lateinit var paint: Paint
-    var x=600f
-    var y= 400f
-    var k = 1
+    private var life = true
+
+    fun endCoroutine(){
+        life = false
+    }
 
     override fun surfaceCreated(p0: SurfaceHolder) {
-
         drawingJob = GlobalScope.launch(Dispatchers.IO) {
-            while(isActive) {
-                val canvas = p0.lockCanvas()?: continue
-                try {
-                    synchronized(p0) {
-                        paintEngine.giveCanvas(canvas)
+            while(life) {
+                if (paintEngine.testNew()) {
+                    val canvas = p0.lockCanvas() ?: continue
+                    try {
+                        synchronized(p0) {
+                            paintEngine.giveCanvas(canvas)
+                        }
+                    } finally {
+                        p0.unlockCanvasAndPost(canvas)
                     }
-                } finally {
-                    p0.unlockCanvasAndPost(canvas)
                 }
             }
         }
-
     }
 
     override fun surfaceChanged(p0: SurfaceHolder, p1: Int, p2: Int, p3: Int) {
         drawingJob = GlobalScope.launch(Dispatchers.IO) {
-            // While this coroutine is running
-            while(isActive) {
-
-                // canvas for double buffering
-                val canvas = p0.lockCanvas()?: continue
-                try {
-                    synchronized(p0) {
-                        // drawing logic
-                        //if ()
-                        paintEngine.giveCanvas(canvas)
+            while(life) {
+                if (paintEngine.testNew()){
+                    val canvas = p0.lockCanvas()?: continue
+                    try {
+                        synchronized(p0) {
+                            paintEngine.giveCanvas(canvas)
+                        }
+                    } finally {
+                        p0.unlockCanvasAndPost(canvas)
                     }
-                } finally {
-                    // print to screen
-                    p0.unlockCanvasAndPost(canvas)
                 }
-            }
-        }
-}
-
-override fun surfaceDestroyed(p0: SurfaceHolder) {
-    drawingJob = GlobalScope.launch(Dispatchers.IO) {
-        // While this coroutine is running
-        while (isActive) {
-
-            // canvas for double buffering
-            val canvas = p0.lockCanvas() ?: continue
-            try {
-                synchronized(p0) {
-                    // drawing logic
-                    //if ()
-                    paintEngine.giveCanvas(canvas)
-                }
-            } finally {
-                // print to screen
-                p0.unlockCanvasAndPost(canvas)
             }
         }
     }
-}
+
+    override fun surfaceDestroyed(p0: SurfaceHolder) {
+        drawingJob = GlobalScope.launch(Dispatchers.IO) {
+            while (life) {
+                if (paintEngine.testNew()) {
+                    val canvas = p0.lockCanvas() ?: continue
+                    try {
+                        synchronized(p0) {
+                            paintEngine.giveCanvas(canvas)
+                        }
+                    } finally {
+                        p0.unlockCanvasAndPost(canvas)
+                    }
+                }
+            }
+        }
+    }
 
 /*    private fun drawingLogic(canvas: Canvas) {
 

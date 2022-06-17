@@ -18,7 +18,7 @@ import java.lang.reflect.Field
 
 class ProjectsRepositorySQL(
     private val db: SQLiteDatabase,
-    private val ioDispatcher: CoroutineDispatcher,
+    private val ioDispatcher: CoroutineDispatcher
 
 ):ProjectInterface {
 
@@ -28,7 +28,7 @@ class ProjectsRepositorySQL(
         val cursor = db.query(
             ProjectsTable.NAME_TABLE,
             arrayOf(ProjectsTable.ID_COLUMN, ProjectsTable.NAME_PROJECT),
-            null, null, null, null, null
+            "${ProjectsTable.ID_COLUMN} != ?",  arrayOf(0.toString()), null, null, null
         )
         return cursor.use {
             val list = mutableListOf<ManualProject>()
@@ -72,11 +72,13 @@ class ProjectsRepositorySQL(
 
     override fun getProjects(): List<ManualProject> =  getAllProjects()
     override fun renameProjects(id: Int, name: String) {
-      /*  db.update(ProjectsTable.NAME_TABLE,
-            ProjectsTable.NAME_PROJECT,
-
-            ProjectsTable.ID_COLUMN+"=?"
-            )*/
+        db.update(ProjectsTable.NAME_TABLE,
+            contentValuesOf(
+                ProjectsTable.NAME_PROJECT to name
+            ),
+            ProjectsTable.ID_COLUMN+"=?",
+        arrayOf(id.toString())
+            )
     }
 
     override fun newProjects(name: String):Int =  newProject(name)

@@ -34,15 +34,13 @@ class ArchiveFragment: Fragment(),HasCustomAction {
     private lateinit var binding: FragmentRecuclerBinding
     private lateinit var adapter : ArchiveAdapter1
     private lateinit var projectsList : List<ManualProject>
-
-
     private val viewModel: ProjectListViewModel by viewModels{factory()}
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding= FragmentRecuclerBinding.inflate(inflater,container,false)
         adapter = ArchiveAdapter1(object : ArchiveActionListener {
             override fun onProjectSelected(manualProject: ManualProject) {
@@ -56,28 +54,12 @@ class ArchiveFragment: Fragment(),HasCustomAction {
             override fun onProjectMove(manualProject: ManualProject,moveBy: Int) {
                 Toast.makeText(activity, "dadfa",Toast.LENGTH_SHORT).show()
             }
-        })
-       /* var bd = Repositories
-        bd.init(requireContext())
-       */ //bd.testCreatedbd()
-        //var test1= ManualProject(167,"kdsalfjlsjdfl;ajdsl;fjl;kajsdf")
-       /// test.add(test1)
-       // GlobalScope.launch {
-        projectsList =  navigator().getRepository().projectsRepositorySQL.getProjects()
-        //}
-        /*testList.add(test)
-        test
-        test = ManualProject(167,"kdsalfjlsjdfl;ajdsl;fjl;kajsdf")
-        testList.add(test)
-        test = ManualProject(189,"kdsalfjlsjdfl;ajdsl;fjl;kajsdf")
-        testList.add(test)
-        test = ManualProject(16,"kdsalfjlsjdfl;ajdsl;fjl;kajsdf")
-        testList.add(test)
-        test = ManualProject(18,"kdsalfjlsjdfl;ajdsl;fjl;kajsdf")
-        testList.add(test)
-        test = ManualProject(10,"kdsalfjlsjdfl;ajdsl;fjl;kajsdf")
-        testList.add(test)*/
 
+            override fun onProjectRename(manualProject: ManualProject){
+                renameProject(manualProject)
+            }
+        })
+        projectsList =  navigator().getRepository().projectsRepositorySQL.getProjects()
         viewModel.projects.observe(viewLifecycleOwner, Observer{
             adapter.projects = it
         })
@@ -85,7 +67,6 @@ class ArchiveFragment: Fragment(),HasCustomAction {
         val layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.layoutManager = layoutManager
         binding.recyclerView.adapter = adapter
-        //binding.toolbar.title = getString(R.string.app_name)
         return binding.root
     }
 
@@ -137,24 +118,16 @@ class ArchiveFragment: Fragment(),HasCustomAction {
             var  result = navigator().getRepository().projectsRepositorySQL.newProjects(it)
             if (result >0){launchWorkbench(result)}
         }
-
-
-      //  launchWorkbench(navigator().getRepository().projectsRepositorySQL.newProjects("Проверочный"))
     }
 
-   /* private fun setupSimpleDialogFragmentListener() {
-        parentFragmentManager.setFragmentResultListener(NewProjectDialogFragment().REQUEST_KEY, this, FragmentResultListener { _, result ->
-            val which = result.getInt(NewProjectDialogFragment().KEY_RESPONSE)
-            when (which) {
-                DialogInterface. -> showToast(R.string.uninstall_confirmed)
-                DialogInterface.BUTTON_NEGATIVE -> showToast(R.string.uninstall_rejected)
-                DialogInterface.BUTTON_NEUTRAL -> {
-                    showToast(R.string.uninstall_ignored)
-                }
-            }
-        })
-    }*/
-
+    private fun renameProject(manualProject: ManualProject){
+        NewProjectDialogFragment.show(parentFragmentManager,projectsList.map{it.text}.toList())
+        NewProjectDialogFragment.setupListener(parentFragmentManager,this){
+           navigator().getRepository().projectsRepositorySQL.renameProjects(manualProject.id,it)
+            projectsList =  navigator().getRepository().projectsRepositorySQL.getProjects()
+            adapter.projects = projectsList
+        }
+    }
 
     override fun getCustomAction(): List<CustomAction> = listOf(CustomAction(
             iconRes = R.drawable.ic_add,

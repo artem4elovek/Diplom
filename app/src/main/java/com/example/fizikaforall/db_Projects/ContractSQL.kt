@@ -6,13 +6,36 @@ object ContractSQL {
         const val ID_COLUMN = "idProject"
         const val NAME_PROJECT = "nameProject"
     }
-    object ComponentsProjectsTable{
-        const val NAME_TABLE = "ComponentsInProject"
-        const val ID_COLUMN = "IdComponents"
-        const val POSITION_X = "posX"
-        const val POSITION_Y = "posY"
+    object Details{
+        const val NAME_TABLE = "details"
+        const val ID_COLUMN = "id"
+        const val POSITION_X = "x_pos"
+        const val POSITION_Y = "y_pos"
         const val ROTATION = "rotation"
-        const val TYPE_COMPONENT = "typeComponent"
-        const val ID_PROJECT = "projectId"
+        const val TYPE_COMPONENT = "type"
+        const val ID_PROJECT = "id_project"
     }
+    object Resistors{
+        const val NAME_TABLE = "resistor"
+        const val ID_COLUMN = "id"
+        const val RESISTANCE= "resistance"
+        const val TYPE_COMPONENT = "typeComponent"
+        const val ID_DETAIL = "id_detail"
+    }
+    object Powers{
+        const val NAME_TABLE = "power"
+        const val ID_COLUMN = "id"
+        const val VOLTAGE = "powers"
+        const val TYPE_COMPONENT = "typeComponent"
+        const val ID_DETAIL = "id_detail"
+    }
+    object DotsContract{
+        const val NAME_TABLE = "dots_contact"
+        const val ID_COLUMN = "id"
+        const val POSITION_X = "x_pos"
+        const val POSITION_Y = "y_pos"
+        const val ID_DETAIL = "id_detail"
+    }
+
+
 }

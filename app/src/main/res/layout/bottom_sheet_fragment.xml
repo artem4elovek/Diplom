@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ImageButton
+        android:id="@+id/angleButton"
+        android:layout_width="@dimen/ItemArchive"
+        android:layout_height="@dimen/ItemArchive"
+        android:layout_gravity="end"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/angleText"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_rotate_right"
+        app:tint="@color/red_wine" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/edit_text_details"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:hint="@string/hintForDetail"
+            android:textSize="@dimen/textScale"
+            android:autofillHints=" "
+            android:inputType="number" />
+        <Button
+            android:id="@+id/saveText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="@string/ProjectSave"
+            android:textSize="@dimen/textScale" />
+
+    </LinearLayout>
+</LinearLayout>

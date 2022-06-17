@@ -4,8 +4,11 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/artinator228/AndroidStudioProjects/FizikaForAll/app/src/main/res/drawable/ic_arrow_back.xml" value="0.20625" />
+        <entry key="..\:/Users/artinator228/AndroidStudioProjects/FizikaForAll/app/src/main/res/drawable/ic_baseline_rotate_right_24.xml" value="0.1859375" />
         <entry key="..\:/Users/artinator228/AndroidStudioProjects/FizikaForAll/app/src/main/res/drawable/ic_power.xml" value="0.20625" />
+        <entry key="..\:/Users/artinator228/AndroidStudioProjects/FizikaForAll/app/src/main/res/drawable/ic_rotate_right.xml" value="0.1859375" />
         <entry key="..\:/Users/artinator228/AndroidStudioProjects/FizikaForAll/app/src/main/res/layout/activity_main.xml" value="0.10309278350515463" />
+        <entry key="..\:/Users/artinator228/AndroidStudioProjects/FizikaForAll/app/src/main/res/layout/bottom_sheet_fragment.xml" value="0.18" />
         <entry key="..\:/Users/artinator228/AndroidStudioProjects/FizikaForAll/app/src/main/res/layout/fragment_drawing_workbench.xml" value="0.1" />
         <entry key="..\:/Users/artinator228/AndroidStudioProjects/FizikaForAll/app/src/main/res/layout/fragment_helper.xml" value="0.12" />
         <entry key="..\:/Users/artinator228/AndroidStudioProjects/FizikaForAll/app/src/main/res/layout/fragment_recucler.xml" value="0.13245033112582782" />

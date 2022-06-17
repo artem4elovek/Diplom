@@ -21,6 +21,8 @@ object Repositories {
         ProjectsRepositorySQL(database,ioDispatcher)
     }
 
-
+    val detailsRepositorySQL : DetailsRepositorySQL by lazy{
+        DetailsRepositorySQL(database,ioDispatcher)
+    }
 
 }

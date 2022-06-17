@@ -18,4 +18,6 @@
     <string name="enterProject">Введите название</string>
     <string name="standardNameProject">Мой проект</string>
     <string name="rename">Переименовать</string>
+    <string name="hintForDetail">Введите значение</string>
+    <string name="angleText">Повернуть деталь</string>
 </resources>

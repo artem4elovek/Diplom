@@ -18,6 +18,7 @@ interface  ArchiveActionListener{
     fun onProjectSelected(manualProject: ManualProject)
     fun onProjectDelete(manualProject: ManualProject)
     fun onProjectMove(manualProject: ManualProject, moveBy: Int)
+    fun  onProjectRename(manualProject: ManualProject)
 
 }
 
@@ -85,7 +86,7 @@ class ArchiveAdapter(
                     archiveActionListener.onProjectMove(project,-1)
                 }
                 ID_RENAME ->{
-                    archiveActionListener.onProjectMove(project,1)
+                    archiveActionListener. onProjectRename(project)
                 }
                 ID_DEL->{
                     archiveActionListener.onProjectDelete(project)

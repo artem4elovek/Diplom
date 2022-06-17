@@ -18,28 +18,39 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.GravityCompat
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.example.fizikaforall.R
-import com.example.fizikaforall.draftsman.DetailPrint
-import com.example.fizikaforall.draftsman.PaintEngine
-import com.example.fizikaforall.draftsman.ProjectCanvasView
-import com.example.fizikaforall.draftsman.TouchHandler
+import com.example.fizikaforall.draftsman.*
+import com.example.fizikaforall.fragments.viewModels.PaintViewModel
 
 
 class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
     private lateinit var binding: FragmentDrawingWorkbenchBinding
-   // private  var surfaceCanvas = ProjectCanvasView()
-   private var list = mutableListOf<DetailPrint>()
+    private lateinit var surfaceCanvas : ProjectCanvasView
+    private  var list = AllDetails(mutableListOf<DetailPrint>(), mutableListOf<Cable>())
+    private val paintViewModel by lazy { ViewModelProviders.of(requireActivity()).get(PaintViewModel::class.java)}
     private lateinit var engine :PaintEngine
     private lateinit var touchHandler: TouchHandler
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding= FragmentDrawingWorkbenchBinding.inflate(inflater,container,false)
-        binding.bottomNavigator.inflateMenu(com.example.fizikaforall.R.menu.menu_drawing_bottom)
-        engine = PaintEngine(requireContext())
 
-        binding.PaintDesk.holder.addCallback(ProjectCanvasView(engine))
-        touchHandler = TouchHandler(engine,requireActivity(),list)
+        binding.bottomNavigator.inflateMenu(R.menu.menu_drawing_bottom)
+        engine = PaintEngine(requireContext())
+        surfaceCanvas = ProjectCanvasView(engine)
+        binding.PaintDesk.holder.addCallback(surfaceCanvas)
+        touchHandler = TouchHandler(engine,requireActivity(),list,parentFragmentManager)
+        paintViewModel.getAllDetails().observe(
+            requireActivity(), Observer {
+                it?.let {
+                    list = it
+                }
+            }
+        )
+
         binding.bottomNavigator.setOnNavigationItemSelectedListener{ it->
             when(it.itemId)
             {
@@ -54,6 +65,10 @@ class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
         binding.PaintDesk.setOnTouchListener{_, event ->touchHandler.runTouch(event)
             true
         }
+
+
+
+
 
 
         return binding.root
@@ -99,6 +114,15 @@ class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
 
         }
     ))
+
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        surfaceCanvas.endCoroutine()
+        paintViewModel.updateAllDetails(list)
+
+    }
 /*
 
     fun toObject(stringValue: String): MutableList<DetailPrint> {

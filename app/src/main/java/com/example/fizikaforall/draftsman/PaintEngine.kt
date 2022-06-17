@@ -5,42 +5,51 @@ import android.graphics.*
 import android.view.SurfaceHolder
 import androidx.core.content.ContextCompat
 import com.example.fizikaforall.R
+import com.example.fizikaforall.fragments.DetailDialogSheetFragment
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class PaintEngine(val context: Context) {
     private var paint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private var details = mutableListOf<DetailPrint>()
+    private  var details =  AllDetails(mutableListOf<DetailPrint>(), mutableListOf<Cable>())
     private var x:Float = 0f
     private var y:Float=0f
+    private var testCable = false
+    private var reloadScreen = true
     init{
-
         paint.color = Color.RED
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 12f
         paint.style= Paint.Style.FILL
-
     }
+    fun giveCanvas(canvas: Canvas) {
+            canvas.drawColor(ContextCompat.getColor(context, R.color.white))
+            details.details.map { it ->
+                canvas.rotate(it.angle.toFloat())
+                canvas.drawBitmap(it.image, it.x, it.y, paint)
 
-
-    fun giveCanvas(canvas: Canvas){
-        canvas.drawColor(ContextCompat.getColor(context, R.color.white))
-        //canvas.drawBitmap(Bitmap.createBitmap(100, 100, Bitmap.Config.RGB_565),x,y,paint)
-        details.map{ canvas.drawBitmap(it.image,it.x,it.y,paint) }
-        //canvas.drawBitmap(BitmapFactory.decodeResource(context.resources,R.drawable.ic_resistor), x,y, paint)
-       // canvas.drawLine(300f,100f,x,y, paint)
+                if (testCable) it.bondingPoints.map { dot -> canvas.drawPoint(dot.x, dot.y, paint) }
+                if (it is  TextPlaice){
+                    paint.textSize =it.getText().second
+                    canvas.drawText(it.getText().first, it.getTextPosition().first,it.getTextPosition().second,paint)
+                }
+            }
+            if (details.cables.isNotEmpty()) details
+                .cables
+                .map { cable ->
+                    canvas.drawLine(
+                        cable.dotStart.x,
+                        cable.dotStart.y, cable.dotEnd.x,
+                        cable.dotEnd.y,
+                        paint
+                    )
+                }
+            reloadScreen = false
     }
-
-
-    fun giveDetails(list:MutableList<DetailPrint>){
-        details = list
+    fun cableEvent(){testCable=!testCable }
+    fun testPicture():Boolean = testCable
+    fun newScreen(){ reloadScreen = true }
+    fun giveDetails(list:AllDetails){
+            details = list
     }
-
-    fun moveLine(x:Float,y:Float){
-        this.x = x
-        this.y = y
-    }
-
-
-
-
-
+    fun testNew():Boolean = reloadScreen
 }
