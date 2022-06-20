@@ -25,6 +25,7 @@ class ProjectsRepositorySQL(
    // private val reconstructFlow = MutableSharedFlow<Unit>(replay = 1).also { it.tryEmit(Unit) }
 
     private fun getAllProjects(): List<ManualProject> {
+        db.execSQL("PRAGMA foreign_keys=ON;")
         val cursor = db.query(
             ProjectsTable.NAME_TABLE,
             arrayOf(ProjectsTable.ID_COLUMN, ProjectsTable.NAME_PROJECT),
@@ -46,6 +47,7 @@ class ProjectsRepositorySQL(
     }
 
     private fun newProject(name: String): Int {
+        db.execSQL("PRAGMA foreign_keys=ON;")
         var result : Int = 0
         try {
             db.insertOrThrow(
@@ -72,6 +74,7 @@ class ProjectsRepositorySQL(
 
     override fun getProjects(): List<ManualProject> =  getAllProjects()
     override fun renameProjects(id: Int, name: String) {
+        db.execSQL("PRAGMA foreign_keys=ON;")
         db.update(ProjectsTable.NAME_TABLE,
             contentValuesOf(
                 ProjectsTable.NAME_PROJECT to name
@@ -83,6 +86,7 @@ class ProjectsRepositorySQL(
 
     override fun newProjects(name: String):Int =  newProject(name)
     override fun removeProjects(id:Int) {
+        db.execSQL("PRAGMA foreign_keys=ON;")
         db.delete(
             ProjectsTable.NAME_TABLE,
             ProjectsTable.ID_COLUMN+"=?"

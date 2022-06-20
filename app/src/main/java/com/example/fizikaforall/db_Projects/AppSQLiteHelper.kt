@@ -10,6 +10,7 @@ class AppSQLiteHelper(
 ) : SQLiteOpenHelper(applicationContext, "database.db", null, 1) {
 
     override fun onCreate(db: SQLiteDatabase) {
+
         val sql = applicationContext.assets.open("db_projects.sql").bufferedReader().use {
             it.readText()
         }
@@ -19,7 +20,7 @@ class AppSQLiteHelper(
                 db.execSQL(it)
             }
     }
-    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        Toast.makeText(applicationContext,"AAAAA",Toast.LENGTH_SHORT).show()
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+
     }
 }

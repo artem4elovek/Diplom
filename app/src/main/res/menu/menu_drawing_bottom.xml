@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:title="@string/bucketText"
+        android:id="@+id/bucketItem"
+        android:icon="@drawable/ic_baseline_delete_outline_24"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="4" />
+
     <item android:title="@string/resistor"
         android:id="@+id/resistorItem"
         android:icon="@drawable/ic_resistor"
@@ -25,4 +31,6 @@
         android:icon="@drawable/ic_wire"
         app:showAsAction="ifRoom"
         android:orderInCategory="0" />
+
+
 </menu>

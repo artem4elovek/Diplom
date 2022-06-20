@@ -20,4 +20,5 @@
     <string name="rename">Переименовать</string>
     <string name="hintForDetail">Введите значение</string>
     <string name="angleText">Повернуть деталь</string>
+    <string name="bucketText">Удалить</string>
 </resources>

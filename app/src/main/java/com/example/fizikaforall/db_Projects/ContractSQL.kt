@@ -9,6 +9,7 @@ object ContractSQL {
     object Details{
         const val NAME_TABLE = "details"
         const val ID_COLUMN = "id"
+        const val SIZE_COLUMN = "size"
         const val POSITION_X = "x_pos"
         const val POSITION_Y = "y_pos"
         const val ROTATION = "rotation"
@@ -35,6 +36,12 @@ object ContractSQL {
         const val POSITION_X = "x_pos"
         const val POSITION_Y = "y_pos"
         const val ID_DETAIL = "id_detail"
+    }
+    object ContactDots{
+        const val NAME_TABLE = "contact_dots"
+        const val ID_COLUMN = "id"
+        const val ID_START = "id_start"
+        const val ID_FINISH = "id_finish"
     }
 
 

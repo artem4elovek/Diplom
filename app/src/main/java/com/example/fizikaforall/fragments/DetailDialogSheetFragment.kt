@@ -15,11 +15,9 @@ import com.example.fizikaforall.draftsman.DetailPrint
 import com.example.fizikaforall.draftsman.TextPlaice
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class DetailDialogSheetFragment( private val onData: (Int) ->Unit) : BottomSheetDialogFragment() {
+class DetailDialogSheetFragment : BottomSheetDialogFragment() {
    // private val detailPrint: DetailPrint
    //     get() = requireArguments().get(ALL_PROJECTS_KEY) as DetailPrint
-
-
 
 
     override fun onCreateView(
@@ -48,7 +46,6 @@ class DetailDialogSheetFragment( private val onData: (Int) ->Unit) : BottomSheet
                 dismiss()
             }
             dialogBinding.angleButton.setOnClickListener {
-                onData(3)
                // if(detailPrint.angle<270)
               //  detailPrint.angle += 90
                // else detailPrint.angle= 0
@@ -64,11 +61,11 @@ class DetailDialogSheetFragment( private val onData: (Int) ->Unit) : BottomSheet
         @JvmStatic val INT_KEY ="INT_KEY"
         @JvmStatic val ALL_PROJECTS_KEY ="ALL_PROJECTS"
 
-       /* fun show(manager: FragmentManager, detailPrint: DetailPrint) {
+        fun show(manager: FragmentManager, detailPrint: DetailPrint) {
             val dialogFragment = DetailDialogSheetFragment()
             dialogFragment.arguments = bundleOf(ALL_PROJECTS_KEY to detailPrint)
             dialogFragment.show(manager,TAG)
-        }*/
+        }
       /*  fun setupListener(manager: FragmentManager, lifecycleOwner: LifecycleOwner, listener: (String) -> Unit) {
             manager.setFragmentResultListener(REQUEST_KEY, lifecycleOwner, FragmentResultListener { _, result ->
                 result.getString(INPUT_KEY)?.let { listener.invoke(it) }

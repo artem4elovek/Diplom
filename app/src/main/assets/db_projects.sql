@@ -41,6 +41,15 @@ CREATE TABLE "resistor" (
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 
+CREATE TABLE "contact_dots" (
+	"id_start"	INTEGER NOT NULL,
+	"id_finish"	INTEGER NOT NULL,
+	"id"	INTEGER NOT NULL UNIQUE,
+	FOREIGN KEY("id_start") REFERENCES "dots_contact"("id") ON DELETE Cascade,
+	FOREIGN KEY("id_finish") REFERENCES "dots_contact"("id") ON DELETE Cascade,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+
 INSERT INTO "Projects" (nameProject,idProject)
 VALUES('Временный проект', 0);
 

@@ -2,25 +2,26 @@ package com.example.fizikaforall.draftsman
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
 import android.view.MotionEvent
-import android.widget.Toast
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.FragmentManager
 import com.example.fizikaforall.R
 import com.example.fizikaforall.fragments.DetailDialogSheetFragment
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 class TouchHandler(
     private val paintEngine: PaintEngine,
     val context: Context,
-    private var list1:AllDetails,
+    private var list: AllDetails,
     private var fragmentManager: FragmentManager,
-    private var idChoice: Int = 0
+    private var bottomSheet: (Int)->Unit,
+    private var idChoice: Int =  -1
 ) {
-    private var list = AllDetails(mutableListOf<DetailPrint>(), mutableListOf<Cable>())
+    //private var list = AllDetails(mutableListOf<DetailPrint>(), mutableListOf<Cable>())
     private var touchRadius: Int = 60
     private var fingerX: Float = 0f
     private var fingerY: Float = 0f
@@ -38,6 +39,7 @@ class TouchHandler(
         paintEngine.giveDetails(list)
     }
 
+    fun giveList(): AllDetails = list
     fun runTouch(event: MotionEvent) {
         val touchCount = event.pointerCount
         for (i in 0 until touchCount) {
@@ -65,13 +67,51 @@ class TouchHandler(
         }
     }
 
+    private fun newId() {
+        while (list.details.map { it.id }.toList().contains(id)) id += 1
+    }
+
+
+    private fun cableDel(id: Int): List<Cable> =
+        list.cables.filter { (it.dotStart.parentId == id) || (it.dotEnd.parentId == id) }
+
+    fun deleteDetail(id: Int) {
+        var detail = list.details.lastOrNull { it.id == id }
+        if (detail != null) {
+            var allContact = cableDel(detail.id)
+            allContact.map { list.cables.remove(it) }
+            list.details.remove(detail)
+        }
+    }
+
+
+    fun angleDetail(id: Int) {
+        val angle = 90
+        list.details.map { detalPrint ->
+            if (detalPrint.id == id) {
+                if (detalPrint.angle + angle > 270) {
+                    detalPrint.angle = 0
+                } else detalPrint.angle += angle
+                detalPrint.bondingPoints.map {
+                    val cosMy = cos((PI / 2)).toFloat()
+                    val sinMy = sin((PI / 2)).toFloat()
+                    val centerX: Float = detalPrint.x + (detalPrint.size / 2)
+                    val centerY: Float = detalPrint.y + (detalPrint.size / 2)
+                    val x = cosMy * (it.x - centerX) - sinMy * (it.y - centerY) + centerX
+                    it.y = sinMy * (it.x - centerX) + cosMy * (it.y - centerY) + centerY
+                    it.x = x
+                }
+            }
+        }
+        paintEngine.newScreen()
+    }
+
+    fun delChoice() {
+        idChoice = 4
+    }
+
     fun resistorChoice() {
-        id += 1
-        /*val bitmap = context.resources.getDrawable(R.drawable.ic_voltmeter,null).toBitmap(size, size)
-        val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 90, stream)
-        val image = stream.toByteArray()
-        list.add(Resistor(startX,startY,id,image))*/
+        newId()
         list.details.add(
             Resistor(
                 startX,
@@ -90,7 +130,7 @@ class TouchHandler(
     }
 
     fun voltmeterChoice() {
-        id += 1
+        newId()
         list.details.add(
             Voltmeter(
                 startX,
@@ -110,8 +150,9 @@ class TouchHandler(
         }
     }
 
+
     fun powerChoice() {
-        id += 1
+        newId()
         list.details.add(
             PowerAdapter(
                 startX,
@@ -183,7 +224,7 @@ class TouchHandler(
                         }
                     }
                 } else if (firstId != 0 to 0) {
-                    id += 1
+                    newId()
                     val knot = Knot(
                         x,
                         y,
@@ -198,9 +239,16 @@ class TouchHandler(
                     firstId = 0 to 0
                 }
             } else {
-                val detail=  DetailDialogSheetFragment(angleEvent {})
-             //   Toast.makeText(context,list.details.last { it.id == idChoice}.toString(),Toast.LENGTH_SHORT).show()
-                detail.show(fragmentManager,  "hhj")
+                var idDetail = scanNearby(x, y)
+                if (idChoice == 4) deleteDetail(idDetail) //deleteDetail(idDetail)
+                else bottomSheet(idDetail)
+               /* val detail = DetailDialogSheetFragment()
+                Toast.makeText(
+                    context,
+                    list.details.last { it.id == idChoice }.toString(),
+                    Toast.LENGTH_SHORT
+                ).show()
+                detail.show(fragmentManager, "hhj")*/
                 //text(idChoice)
             }
             //должны открыться настройки детали
@@ -214,13 +262,21 @@ class TouchHandler(
         paintEngine.newScreen()
     }
 
-    private fun text(id: Int) {
-        paintEngine.newScreen()
+    fun newText(id: Int, text:String) {
+        list.details.map{ if((it.id == id)){ if (it is TextPlaice) it.text = text}
+            paintEngine.newScreen()
+        }
     }
 
-    private fun angleEvent(i:Int) {
+     fun text(id: Int):String? {
+         val detail = list.details.last { it.id == id }
+          return if(detail is TextPlaice) detail.text
+         else null
+    }
+
+    private fun angleEvent(i: Int) {
         list.details[0].angle += 90
-      //  paintEngine.newScreen()
+        //  paintEngine.newScreen()
     }
 
 

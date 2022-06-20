@@ -1,48 +1,47 @@
 package com.example.fizikaforall.fragments
 
-import android.app.ActionBar
-import android.graphics.*
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.fizikaforall.adapters.HelperAdapter
 import com.example.fizikaforall.databinding.FragmentDrawingWorkbenchBinding
-import com.example.fizikaforall.databinding.FragmentRecuclerBinding
 import com.example.fizikaforall.fragments.contract.CustomAction
 import com.example.fizikaforall.fragments.contract.HasCustomAction
-import com.example.fizikaforall.fragments.contract.HasCustomTitle
-import android.widget.Toolbar
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.graphics.drawable.toBitmap
-import androidx.core.view.GravityCompat
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.example.fizikaforall.R
 import com.example.fizikaforall.draftsman.*
+import com.example.fizikaforall.fragments.contract.navigator
 import com.example.fizikaforall.fragments.viewModels.PaintViewModel
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
 
 class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
     private lateinit var binding: FragmentDrawingWorkbenchBinding
     private lateinit var surfaceCanvas : ProjectCanvasView
-    private  var list = AllDetails(mutableListOf<DetailPrint>(), mutableListOf<Cable>())
+    private  lateinit var  list: AllDetails // = navigator().getRepository().detailsRepositorySQL.getAllDetails(getIdProject())
     private val paintViewModel by lazy { ViewModelProviders.of(requireActivity()).get(PaintViewModel::class.java)}
     private lateinit var engine :PaintEngine
+    private var idProject = 0
     private lateinit var touchHandler: TouchHandler
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding= FragmentDrawingWorkbenchBinding.inflate(inflater,container,false)
-
+        idProject = getIdProject()
+        aaa(idProject.toString())
+        list = navigator().getRepository().detailsRepositorySQL.getAllDetails(idProject,context!!)
+        if (list == null){
+            list = AllDetails(mutableListOf<DetailPrint>(), mutableListOf<Cable>())
+        }
         binding.bottomNavigator.inflateMenu(R.menu.menu_drawing_bottom)
         engine = PaintEngine(requireContext())
         surfaceCanvas = ProjectCanvasView(engine)
         binding.PaintDesk.holder.addCallback(surfaceCanvas)
-        touchHandler = TouchHandler(engine,requireActivity(),list,parentFragmentManager)
+        var a:(Int)->Unit = {it-> sheetDialog(it)}
+        touchHandler = TouchHandler(engine,requireActivity(),list,parentFragmentManager,a)
         paintViewModel.getAllDetails().observe(
             requireActivity(), Observer {
                 it?.let {
@@ -58,6 +57,7 @@ class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
                 R.id.voltmeterItem ->touchHandler.voltmeterChoice()
                 R.id.cableItem ->touchHandler.cableChoice()
                 R.id.powerItem -> touchHandler.powerChoice()
+                R.id.bucketItem ->touchHandler.delChoice()
             }
             true
         }
@@ -65,10 +65,6 @@ class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
         binding.PaintDesk.setOnTouchListener{_, event ->touchHandler.runTouch(event)
             true
         }
-
-
-
-
 
 
         return binding.root
@@ -111,7 +107,8 @@ class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
         iconRes = R.drawable.ic_save,
         textRes = R.string.back,
         onCustomAction = Runnable {
-
+           // Toast.makeText(context,touchHandler.giveList().details[0].id.toString(),Toast.LENGTH_SHORT).show()
+        navigator().getRepository().detailsRepositorySQL.saveProject(idProject,touchHandler.giveList(), context!!)
         }
     ))
 
@@ -123,6 +120,35 @@ class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
         paintViewModel.updateAllDetails(list)
 
     }
+
+
+    private fun sheetDialog(id:Int ) {
+        var text = touchHandler.text(id)
+        val dialog = BottomSheetDialog(requireContext())
+        val bottomSheet = layoutInflater.inflate(R.layout.bottom_sheet_fragment, null)
+        bottomSheet.setOnClickListener {
+            dialog.dismiss() }
+        dialog.setContentView(bottomSheet)
+        bottomSheet.findViewById<ImageButton>(R.id.angleButton).setOnClickListener {
+            touchHandler.angleDetail(id)
+
+        }
+        val edittext = bottomSheet.findViewById<EditText>(R.id.edit_text_details)
+        val saveButton = bottomSheet.findViewById<Button>(R.id.saveText)
+        if(text == null){
+            edittext.visibility =   View.GONE
+            saveButton.visibility  =   View.GONE
+        }
+        else edittext.setText(text)
+        saveButton.setOnClickListener {
+            touchHandler.newText(id,edittext.text.toString())
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+
+
 /*
 
     fun toObject(stringValue: String): MutableList<DetailPrint> {

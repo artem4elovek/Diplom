@@ -24,9 +24,7 @@ class PaintEngine(val context: Context) {
     fun giveCanvas(canvas: Canvas) {
             canvas.drawColor(ContextCompat.getColor(context, R.color.white))
             details.details.map { it ->
-                canvas.rotate(it.angle.toFloat())
-                canvas.drawBitmap(it.image, it.x, it.y, paint)
-
+                canvas.drawBitmap(it.image.rotate(it.angle.toFloat()), it.x, it.y, paint)
                 if (testCable) it.bondingPoints.map { dot -> canvas.drawPoint(dot.x, dot.y, paint) }
                 if (it is  TextPlaice){
                     paint.textSize =it.getText().second
@@ -52,4 +50,10 @@ class PaintEngine(val context: Context) {
             details = list
     }
     fun testNew():Boolean = reloadScreen
+
+    private fun Bitmap.rotate(degrees: Float): Bitmap {
+        val matrix = Matrix().apply { postRotate(degrees) }
+        return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
+    }
+
 }

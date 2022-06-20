@@ -6,7 +6,7 @@ import kotlin.math.sqrt
 
 open class Dot(open var x : Float,
                open var y: Float,
-               open val id:Int,
+               open var id:Int,
                open var parentId:Int = 0)
 {
 
@@ -21,11 +21,11 @@ open class DetailPrint(
      override var x : Float,
      override  var y: Float,
      open val image: Bitmap,
-     override val id:Int,
+     override var id:Int,
      open var size : Int,
      open var angle:Int = 0
 ):Dot(x,y,id){
-    open val bondingPoints = mutableListOf<Dot>()
+    open var bondingPoints = mutableListOf<Dot>()
     fun moveEvent(  newX : Float, newY: Float){
         bondingPoints.map{it.x+=(newX-x)
             it.y+=(newY-y)}
