@@ -296,7 +296,7 @@ class TouchHandler(
 
         powerList.map { detailPrint ->
             detailPrint.bondingPoints.map { dot ->
-                if (recurTester(detailPrint, Cable( dot, dot), dot)) result = true
+                if (recurTester(detailPrint,dot)) result = true
             }
         }
 
@@ -307,12 +307,12 @@ class TouchHandler(
     }
 
 
-    private fun recurTester(detailPrint: DetailPrint, behindCable: Cable, dot: Dot): Boolean {
+    private fun recurTester(detailPrint: DetailPrint, dot: Dot,behindCable: MutableList<Cable> = mutableListOf<Cable>()): Boolean {
         Log.d("cable", detailPrint.id.toString())
         detailPrint.bondingPoints.map { dotLocal ->
             if (dotLocal != dot) {
                 list.cables.map { cable ->
-                    if (behindCable != cable) {
+                    if (behindCable.isEmpty()|| !behindCable.contains(cable)) {
                         when (dotLocal) {
                             cable.dotStart ->
                                 if ((list.details.first { detailPrint -> detailPrint.id == cable.dotEnd.parentId } is PowerAdapter)) {
@@ -323,11 +323,12 @@ class TouchHandler(
                                         )
                                         return true
                                  //   }
-                                } else return recurTester(
+                                } else{behindCable.add(cable)
+                                    return recurTester(
                                     list.details.first { detailPrint -> detailPrint.id == cable.dotEnd.parentId },
-                                    cable,
-                                    dot
-                                )
+                                    dot,
+                                        behindCable
+                                )}
                             cable.dotEnd ->
                                 if ((list.details.first { detailPrint -> detailPrint.id == cable.dotStart.parentId } is PowerAdapter)) {
                                   //  if (cable.dotStart != dot) {
@@ -337,11 +338,12 @@ class TouchHandler(
                                         )
                                         return true
                                   //  }
-                                } else return recurTester(
+                                } else{behindCable.add(cable)
+                                    return recurTester(
                                     list.details.first { detailPrint -> detailPrint.id == cable.dotStart.parentId },
-                                    cable,
-                                    dot
-                                )
+                                    dot,
+                                        behindCable
+                                )}
                         }
                     }
                 }

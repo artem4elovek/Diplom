@@ -36,7 +36,7 @@ object ContractSQL {
         const val ID_DETAIL = "id_detail"
     }
     object DotsContract{
-        const val NAME_TABLE = "dots_contact"
+        const val NAME_TABLE = "dots"
         const val ID_COLUMN = "id"
         const val POSITION_X = "x_pos"
         const val POSITION_Y = "y_pos"

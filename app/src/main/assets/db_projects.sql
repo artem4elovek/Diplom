@@ -18,7 +18,7 @@ CREATE TABLE "details" (
 	PRIMARY KEY("id")
 );
 
-CREATE TABLE "dots_contact" (
+CREATE TABLE "dots" (
 	"id"	INTEGER NOT NULL UNIQUE,
 	"id_detail"	INTEGER NOT NULL,
 	"x_pos"	REAL NOT NULL,
