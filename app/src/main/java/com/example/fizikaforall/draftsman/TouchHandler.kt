@@ -301,8 +301,8 @@ class TouchHandler(
         }
 
         if (result) {
-            Toast.makeText(context, "eeeeeee", Toast.LENGTH_SHORT).show()
-        } else Toast.makeText(context, ":(", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.correctСonnect), Toast.LENGTH_SHORT).show()
+        } else Toast.makeText(context, context.getString(R.string.noCorrectСonnect), Toast.LENGTH_SHORT).show()
 
     }
 

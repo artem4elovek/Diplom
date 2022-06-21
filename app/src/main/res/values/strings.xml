@@ -24,5 +24,7 @@
     <string name="Om">Ом</string>
     <string name="Volt">В</string>
     <string name="play">Старт</string>
+    <string name="correctСonnect">Связь правильная</string>
+    <string name="noCorrectСonnect">Связь не правильная</string>
 
 </resources>
