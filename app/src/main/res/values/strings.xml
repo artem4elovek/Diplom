@@ -21,4 +21,8 @@
     <string name="hintForDetail">Введите значение</string>
     <string name="angleText">Повернуть деталь</string>
     <string name="bucketText">Удалить</string>
+    <string name="Om">Ом</string>
+    <string name="Volt">В</string>
+    <string name="play">Старт</string>
+
 </resources>

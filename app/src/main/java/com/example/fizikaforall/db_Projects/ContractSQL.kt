@@ -16,18 +16,23 @@ object ContractSQL {
         const val TYPE_COMPONENT = "type"
         const val ID_PROJECT = "id_project"
     }
+    object Voltmeter{
+        const val NAME_TABLE = "voltmeter"
+        const val ID_COLUMN = "id"
+        const val VOLTAGE =  "voltage"
+        const val TYPE_COMPONENT = "typeComponent"
+        const val ID_DETAIL = "id_detail"
+    }
     object Resistors{
         const val NAME_TABLE = "resistor"
         const val ID_COLUMN = "id"
-        const val RESISTANCE= "resistance"
-        const val TYPE_COMPONENT = "typeComponent"
+        const val RESISTANCE="resistance"
         const val ID_DETAIL = "id_detail"
     }
     object Powers{
         const val NAME_TABLE = "power"
         const val ID_COLUMN = "id"
         const val VOLTAGE = "powers"
-        const val TYPE_COMPONENT = "typeComponent"
         const val ID_DETAIL = "id_detail"
     }
     object DotsContract{
@@ -43,6 +48,4 @@ object ContractSQL {
         const val ID_START = "id_start"
         const val ID_FINISH = "id_finish"
     }
-
-
 }

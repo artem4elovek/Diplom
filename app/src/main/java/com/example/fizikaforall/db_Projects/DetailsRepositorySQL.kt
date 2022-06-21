@@ -8,11 +8,13 @@ import android.graphics.Bitmap
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.contentValuesOf
+import androidx.core.database.getFloatOrNull
 import androidx.core.graphics.drawable.toBitmap
 import com.example.fizikaforall.R
 import com.example.fizikaforall.draftsman.*
 import com.example.fizikaforall.manual.ManualProject
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlin.math.log
 
 class DetailsRepositorySQL(
     private val db: SQLiteDatabase,
@@ -116,17 +118,34 @@ class DetailsRepositorySQL(
         }
 
     private fun createResistor(cursor: Cursor, context: Context): Resistor {
+        val id = cursor.getInt(cursor.getColumnIndexOrThrow(ContractSQL.Details.ID_COLUMN))
         var size = cursor.getInt(cursor.getColumnIndexOrThrow(ContractSQL.Details.SIZE_COLUMN))
         var resistor = Resistor(
             cursor.getFloat(cursor.getColumnIndexOrThrow(ContractSQL.Details.POSITION_X)),
             cursor.getFloat(cursor.getColumnIndexOrThrow(ContractSQL.Details.POSITION_Y)),
-            cursor.getInt(cursor.getColumnIndexOrThrow(ContractSQL.Details.ID_COLUMN)),
+            id,
             context.resources.getDrawable(R.drawable.ic_resistor, null).toBitmap(size, size),
             size,
             cursor.getInt(cursor.getColumnIndexOrThrow(ContractSQL.Details.ROTATION)),
+            context.getString(R.string.Om)
         )
+
+
+        val cursor1 = db.query(
+            ContractSQL.Resistors.NAME_TABLE,
+            arrayOf(ContractSQL.Resistors.RESISTANCE),
+            "${ContractSQL.Resistors.ID_DETAIL} == ?",
+            arrayOf(id.toString()), null, null, null
+        )
+        cursor1.use {
+            cursor1.moveToLast()
+            resistor.text = cursor1.getFloat(cursor1.getColumnIndexOrThrow(ContractSQL.Resistors.RESISTANCE)).toString()
+        }
+
+
+
         resistor.bondingPoints =
-            downloadDots(cursor.getInt(cursor.getColumnIndexOrThrow(ContractSQL.Details.ID_COLUMN)))
+            downloadDots(id)
         //list.map { resistor.bondingPoints.add(it) }
         return resistor
     }
@@ -164,33 +183,60 @@ class DetailsRepositorySQL(
 
 
     private fun createVoltmeter(cursor: Cursor, context: Context): Voltmeter {
+        val id = cursor.getInt(cursor.getColumnIndexOrThrow(ContractSQL.Details.ID_COLUMN))
         var size = cursor.getInt(cursor.getColumnIndexOrThrow(ContractSQL.Details.SIZE_COLUMN))
         var voltmeter = Voltmeter(
             cursor.getFloat(cursor.getColumnIndexOrThrow(ContractSQL.Details.POSITION_X)),
             cursor.getFloat(cursor.getColumnIndexOrThrow(ContractSQL.Details.POSITION_Y)),
-            cursor.getInt(cursor.getColumnIndexOrThrow(ContractSQL.Details.ID_COLUMN)),
+            id,
             context.resources.getDrawable(R.drawable.ic_voltmeter, null).toBitmap(size, size),
             size,
-            "",
             cursor.getInt(cursor.getColumnIndexOrThrow(ContractSQL.Details.ROTATION)),
+            context.getString(R.string.Om)
         )
+
+        val cursor1 = db.query(
+            ContractSQL.Voltmeter.NAME_TABLE,
+            arrayOf(ContractSQL.Voltmeter.VOLTAGE),
+            "${ContractSQL.Voltmeter.ID_DETAIL} == ?",
+            arrayOf(id.toString()), null, null, null
+        )
+        cursor1.use {
+            cursor1.moveToLast()
+            voltmeter.text =
+                cursor1.getDouble(cursor1.getColumnIndexOrThrow(ContractSQL.Voltmeter.VOLTAGE))
+                    .toString()
+        }
+
+
         voltmeter.bondingPoints =
-            downloadDots(cursor.getInt(cursor.getColumnIndexOrThrow(ContractSQL.Details.ID_COLUMN)))
+            downloadDots(id)
         return voltmeter
     }
 
     private fun createPower(cursor: Cursor, context: Context): PowerAdapter {
         var size = cursor.getInt(cursor.getColumnIndexOrThrow(ContractSQL.Details.SIZE_COLUMN))
+        var id = cursor.getInt(cursor.getColumnIndexOrThrow(ContractSQL.Details.ID_COLUMN))
         var powerAdapter = PowerAdapter(
             cursor.getFloat(cursor.getColumnIndexOrThrow(ContractSQL.Details.POSITION_X)),
             cursor.getFloat(cursor.getColumnIndexOrThrow(ContractSQL.Details.POSITION_Y)),
-            cursor.getInt(cursor.getColumnIndexOrThrow(ContractSQL.Details.ID_COLUMN)),
+            id,
             context.resources.getDrawable(R.drawable.ic_power, null).toBitmap(size, size),
             size,
             cursor.getInt(cursor.getColumnIndexOrThrow(ContractSQL.Details.ROTATION)),
+            context.getString(R.string.Volt)
         )
-        powerAdapter.bondingPoints =
-            downloadDots(cursor.getInt(cursor.getColumnIndexOrThrow(ContractSQL.Details.ID_COLUMN)))
+        Log.d("cr", id.toString())
+        val cursor1 = db.query(
+            ContractSQL.Powers.NAME_TABLE,
+            arrayOf(ContractSQL.Powers.VOLTAGE),
+            "${ContractSQL.Powers.ID_DETAIL} == ?",
+            arrayOf(id.toString()), null, null, null
+        )
+        Log.d("cr", id.toString())
+            cursor1.moveToLast()
+            powerAdapter.text = cursor1.getDouble(cursor1.getColumnIndexOrThrow(ContractSQL.Powers.VOLTAGE)).toString()
+        powerAdapter.bondingPoints = downloadDots(id)
 
         return powerAdapter
     }
@@ -243,7 +289,7 @@ class DetailsRepositorySQL(
                                 },
                         ContractSQL.Details.ROTATION to detail.angle,
                         ContractSQL.Details.ID_PROJECT to id_Project
-                    ),
+                    )
                 )
             } catch (e: SQLiteConstraintException) {
                 result = -1
@@ -255,6 +301,12 @@ class DetailsRepositorySQL(
                 )
             cursor.moveToLast()
             detail.id = cursor.getInt(cursor.getColumnIndexOrThrow(ContractSQL.Details.ID_COLUMN))
+            when (detail) {
+                is PowerAdapter -> savePower(detail)
+                is Resistor -> saveResistor(detail)
+                is Voltmeter -> saveVoltmeter(detail)
+                else -> {}
+            }
             detail.bondingPoints.map { point ->
                 point.parentId =
                     cursor.getInt(cursor.getColumnIndexOrThrow(ContractSQL.Details.ID_COLUMN))
@@ -292,6 +344,71 @@ class DetailsRepositorySQL(
                     ContractSQL.ContactDots.ID_FINISH to cable.dotEnd.id
                 )
             )
+
+        }
+    }
+
+
+    private fun saveResistor(detail: Resistor) {
+        var test = detail.text
+       if  (test.isEmpty()){
+           test = 0.toString()
+        }else{
+           // test.filter {(it in '0'..'9') || (it=='.')}
+        }
+
+        try {
+            Log.d("test",  test.toFloat().toString() + "--" + detail.id)
+            db.insertOrThrow(
+                ContractSQL.Resistors.NAME_TABLE,
+                null,
+                contentValuesOf(
+                    ContractSQL.Resistors.ID_DETAIL to detail.id,
+                    ContractSQL.Resistors.RESISTANCE to test.toDouble()
+                )
+            )
+        } catch (e: SQLiteConstraintException) {
+
+        }
+    }
+
+    private fun saveVoltmeter(detail: Voltmeter) {
+        var test = detail.text
+        if  (test.isEmpty()){
+            test = 0.toString()
+        }
+
+
+        try {
+            db.insertOrThrow(
+                ContractSQL.Voltmeter.NAME_TABLE,
+                null,
+                contentValuesOf(
+                    ContractSQL.Voltmeter.ID_DETAIL to detail.id,
+                    ContractSQL.Voltmeter.VOLTAGE to test.toDouble()
+                )
+            )
+        } catch (e: SQLiteConstraintException) {
+
+        }
+    }
+
+    private fun savePower(detail: PowerAdapter) {
+        var test = detail.text
+        if  (test.isEmpty()){
+            test = 0.toString()
+        }
+
+        try {
+            db.insertOrThrow(
+                ContractSQL.Powers.NAME_TABLE,
+                null,
+                contentValuesOf(
+                    ContractSQL.Powers.ID_DETAIL to detail.id,
+                    ContractSQL.Powers.VOLTAGE to test.toDouble()
+                )
+            )
+        } catch (e: SQLiteConstraintException) {
 
         }
     }

@@ -41,6 +41,14 @@ CREATE TABLE "resistor" (
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 
+CREATE TABLE "voltmeter" (
+	"id"	INTEGER NOT NULL UNIQUE,
+	"id_detail"	INTEGER NOT NULL UNIQUE,
+	"voltage"	REAL NOT NULL,
+	FOREIGN KEY("id_detail") REFERENCES "details"("id")  ON DELETE CASCADE,
+	PRIMARY KEY("id" AUTOINCREMENT)
+);
+
 CREATE TABLE "contact_dots" (
 	"id_start"	INTEGER NOT NULL,
 	"id_finish"	INTEGER NOT NULL,

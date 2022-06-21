@@ -29,8 +29,9 @@
             android:layout_weight="6"
             android:hint="@string/hintForDetail"
             android:textSize="@dimen/textScale"
+            android:maxLength="18"
             android:autofillHints=" "
-            android:inputType="number" />
+            android:inputType="numberDecimal" />
         <Button
             android:id="@+id/saveText"
             android:layout_width="0dp"

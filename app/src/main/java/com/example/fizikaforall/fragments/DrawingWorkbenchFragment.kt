@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.core.content.PackageManagerCompat
 import androidx.fragment.app.Fragment
 import com.example.fizikaforall.databinding.FragmentDrawingWorkbenchBinding
 import com.example.fizikaforall.fragments.contract.CustomAction
@@ -17,9 +18,14 @@ import com.example.fizikaforall.draftsman.*
 import com.example.fizikaforall.fragments.contract.navigator
 import com.example.fizikaforall.fragments.viewModels.PaintViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import androidx.core.content.PackageManagerCompat.LOG_TAG
 
 
-class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
+
+
+
+open class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
+    private val savedState = "Saved"
     private lateinit var binding: FragmentDrawingWorkbenchBinding
     private lateinit var surfaceCanvas : ProjectCanvasView
     private  lateinit var  list: AllDetails // = navigator().getRepository().detailsRepositorySQL.getAllDetails(getIdProject())
@@ -29,9 +35,13 @@ class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
     private lateinit var touchHandler: TouchHandler
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        if (savedInstanceState != null) {
+            idProject  = savedInstanceState.getInt(savedState, 0)
+        }else  idProject = getIdProject()
         binding= FragmentDrawingWorkbenchBinding.inflate(inflater,container,false)
-        idProject = getIdProject()
-        aaa(idProject.toString())
+
+        //aaa(idProject.toString())
         list = navigator().getRepository().detailsRepositorySQL.getAllDetails(idProject,context!!)
         if (list == null){
             list = AllDetails(mutableListOf<DetailPrint>(), mutableListOf<Cable>())
@@ -69,6 +79,21 @@ class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
 
         return binding.root
     }
+
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(savedState,0)
+    }
+
+
+
+
+
+
+
+
+
     private fun getIdProject():Int = requireArguments().getInt(DrawingWorkbenchFragment.ARG_ID_PROJECT)
 
     companion object{
@@ -92,7 +117,15 @@ class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
         Toast.makeText(requireActivity(), str, Toast.LENGTH_SHORT).show()
     }
 
-    override fun getCustomAction(): List<CustomAction> = listOf(CustomAction(
+    override fun getCustomAction(): List<CustomAction> = listOf(
+        CustomAction(
+            iconRes = R.drawable.ic_play,
+            textRes = R.string.play,
+            onCustomAction = Runnable {
+                touchHandler.testContact()
+            }
+        ),
+        CustomAction(
         iconRes = R.drawable.ic_arrow_back,
         textRes = R.string.back,
         onCustomAction = Runnable {
@@ -108,7 +141,7 @@ class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
         textRes = R.string.back,
         onCustomAction = Runnable {
            // Toast.makeText(context,touchHandler.giveList().details[0].id.toString(),Toast.LENGTH_SHORT).show()
-        navigator().getRepository().detailsRepositorySQL.saveProject(idProject,touchHandler.giveList(), context!!)
+        navigator().getRepository().detailsRepositorySQL.saveProject(getIdProject(),touchHandler.giveList(), context!!)
         }
     ))
 
@@ -116,6 +149,7 @@ class DrawingWorkbenchFragment:Fragment(),HasCustomAction{
 
     override fun onDestroyView() {
         super.onDestroyView()
+        navigator().getRepository().detailsRepositorySQL.saveProject(0,touchHandler.giveList(), context!!)
         surfaceCanvas.endCoroutine()
         paintViewModel.updateAllDetails(list)
 

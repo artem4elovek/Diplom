@@ -2,7 +2,9 @@ package com.example.fizikaforall.draftsman
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.util.Log
 import android.view.MotionEvent
+import android.widget.Toast
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.FragmentManager
 import com.example.fizikaforall.R
@@ -18,8 +20,8 @@ class TouchHandler(
     val context: Context,
     private var list: AllDetails,
     private var fragmentManager: FragmentManager,
-    private var bottomSheet: (Int)->Unit,
-    private var idChoice: Int =  -1
+    private var bottomSheet: (Int) -> Unit,
+    private var idChoice: Int = -1
 ) {
     //private var list = AllDetails(mutableListOf<DetailPrint>(), mutableListOf<Cable>())
     private var touchRadius: Int = 60
@@ -118,7 +120,9 @@ class TouchHandler(
                 startY,
                 id,
                 context.resources.getDrawable(R.drawable.ic_resistor, null).toBitmap(size, size),
-                size, 0
+                size,
+                0,
+                context.getString(R.string.Om)
             )
         )
         idChoice = 2
@@ -138,8 +142,8 @@ class TouchHandler(
                 id,
                 context.resources.getDrawable(R.drawable.ic_voltmeter, null).toBitmap(size, size),
                 size,
-                "",
-                0
+                0,
+                context.getString(R.string.Om)
             )
         )
         paintEngine.newScreen()
@@ -160,7 +164,8 @@ class TouchHandler(
                 id,
                 context.resources.getDrawable(R.drawable.ic_power, null).toBitmap(size, size),
                 size,
-                0
+                0,
+                context.getString(R.string.Volt)
             )
         )
         idChoice = 1
@@ -240,16 +245,18 @@ class TouchHandler(
                 }
             } else {
                 var idDetail = scanNearby(x, y)
-                if (idChoice == 4) deleteDetail(idDetail) //deleteDetail(idDetail)
-                else bottomSheet(idDetail)
-               /* val detail = DetailDialogSheetFragment()
+                if (idDetail > 0) {
+                    if (idChoice == 4) deleteDetail(idDetail) //deleteDetail(idDetail)
+                    else bottomSheet(idDetail)
+                    /* val detail = DetailDialogSheetFragment()
                 Toast.makeText(
                     context,
                     list.details.last { it.id == idChoice }.toString(),
                     Toast.LENGTH_SHORT
                 ).show()
                 detail.show(fragmentManager, "hhj")*/
-                //text(idChoice)
+                    //text(idChoice)
+                }
             }
             //должны открыться настройки детали
 
@@ -262,16 +269,19 @@ class TouchHandler(
         paintEngine.newScreen()
     }
 
-    fun newText(id: Int, text:String) {
-        list.details.map{ if((it.id == id)){ if (it is TextPlaice) it.text = text}
+    fun newText(id: Int, text: String) {
+        list.details.map {
+            if ((it.id == id)) {
+                if (it is TextPlaice) it.text = text
+            }
             paintEngine.newScreen()
         }
     }
 
-     fun text(id: Int):String? {
-         val detail = list.details.last { it.id == id }
-          return if(detail is TextPlaice) detail.text
-         else null
+    fun text(id: Int): String? {
+        val detail = list.details.last { it.id == id }
+        return if (detail is TextPlaice) detail.text
+        else null
     }
 
     private fun angleEvent(i: Int) {
@@ -279,6 +289,82 @@ class TouchHandler(
         //  paintEngine.newScreen()
     }
 
+
+    fun testContact() {
+        var result = false
+        val powerList = list.details.filterIsInstance<PowerAdapter>()
+
+        powerList.map { detailPrint ->
+            detailPrint.bondingPoints.map { dot ->
+                if (recurTester(detailPrint, Cable( dot, dot), dot)) result = true
+            }
+        }
+
+        if (result) {
+            Toast.makeText(context, "eeeeeee", Toast.LENGTH_SHORT).show()
+        } else Toast.makeText(context, ":(", Toast.LENGTH_SHORT).show()
+
+    }
+
+
+    private fun recurTester(detailPrint: DetailPrint, behindCable: Cable, dot: Dot): Boolean {
+        Log.d("cable", detailPrint.id.toString())
+        detailPrint.bondingPoints.map { dotLocal ->
+            if (dotLocal != dot) {
+                list.cables.map { cable ->
+                    if (behindCable != cable) {
+                        when (dotLocal) {
+                            cable.dotStart ->
+                                if ((list.details.first { detailPrint -> detailPrint.id == cable.dotEnd.parentId } is PowerAdapter)) {
+                                  //  if (cable.dotEnd != dot) {
+                                        Log.d(
+                                            "cable",
+                                            "1 " + cable.dotEnd.toString() + "__" + cable.dotEnd.id.toString() + "_|_" + dot.toString() + "__" + dot.id.toString()
+                                        )
+                                        return true
+                                 //   }
+                                } else return recurTester(
+                                    list.details.first { detailPrint -> detailPrint.id == cable.dotEnd.parentId },
+                                    cable,
+                                    dot
+                                )
+                            cable.dotEnd ->
+                                if ((list.details.first { detailPrint -> detailPrint.id == cable.dotStart.parentId } is PowerAdapter)) {
+                                  //  if (cable.dotStart != dot) {
+                                        Log.d(
+                                            "cable",
+                                            "2 " + cable.dotStart.toString() + "__" + cable.dotStart.id.toString() + "_|_" + dot.toString() + "__" + dot.id.toString()
+                                        )
+                                        return true
+                                  //  }
+                                } else return recurTester(
+                                    list.details.first { detailPrint -> detailPrint.id == cable.dotStart.parentId },
+                                    cable,
+                                    dot
+                                )
+                        }
+                    }
+                }
+            }
+        }
+        return false
+    }
+
+
+    /* private fun recurTester(pastCable: Cable, dot: Dot):Boolean {
+         list.cables.map { cable ->
+             if ((cable != pastCable)&&(pastCable.) && ((cable.dotEnd == pastCable.dotEnd) || (cable.dotEnd == pastCable.dotStart) || (cable.dotStart == pastCable.dotEnd) || (cable.dotStart == pastCable.dotStart))) {
+                 Log.d("cable", cable.dotEnd.parentId.toString())
+                 return if (list.details.first { (it.id != dot.parentId)&&((it.id == pastCable.dotEnd.parentId)||(it.id == pastCable.dotStart.parentId))} is PowerAdapter) {
+
+                     true
+                 }
+                 else  recurTester(cable, dot)
+             }
+         }
+         return false
+     }
+ */
 
     private fun sizeEvent(newSize: Int) {
         list.details.map { it.sizeEvent(newSize) }
